@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">>
+<head>
+    <meta charset="UTF-8">
+    <title>Kehadiran</title>
+    <div layout:fragment="assets">
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header text-bold">
+            <div class="float-right">
+                <a href="#" th:href="@{/home}"><em class="px-2 fa fa-home fa-lg text-success"></em></a>
+                <a href="#" th:href="@{/presensi/kehadiran}"><em class="px-2 fa fa-redo fa-lg"></em></a>
+            </div>
+            Kehadiran, Tanggal: <span class="text-primary text-bold"
+                                      th:text="${#temporals.format(tanggal, 'dd-MM-yyyy')}"></span>, Jumlah: <span class="text-danger text-bold"
+                                                                                            th:text="${totalData}"></span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>NIP</th>
+                        <th>Unit Kerja</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:with="add=(${data.getNumber()}*${data.getSize()})" th:each="d,dStat : ${data.content}">
+                        <td th:text="${dStat.index+1+add}">No</td>
+                        <td th:text="${d.gelarDepan == null ? '' : d.gelarDepan + ' '} + ${d.nama} + ${d.gelarBelakang == null ? '' : ' ' + d.gelarBelakang}">
+                            Nama
+                        </td>
+                        <td th:text="${d.nip}">NIP</td>
+                        <td th:text="${d.unitKerja?.nama}">Unit Kerja</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex">
+                <div sd:pagination-summary="">Showing 1 to 10 of 57 entries</div>
+                <div class="ml-auto">
+                    <ul class="pagination" sd:pagination="full" sd:pagination-split="7">
+                        <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
+                        <li class="disabled">
+                            <a aria-label="Previous" href="#">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="#">1
+                                <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div layout:fragment="scripts">
+</div>
+</body>
+</html>

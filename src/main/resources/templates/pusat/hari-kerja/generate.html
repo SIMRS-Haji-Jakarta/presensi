@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Generate Hari Kerja</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div th:if="${!#strings.isEmpty(message)}" class="alert alert-danger alert-dismissable">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a th:href="@{/home}" href="#"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a th:href="@{/pusat/hari-kerja/generate}" href="#"><em class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    Generate Hari Kerja
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/pusat/hari-kerja/generate}">
+                        <div class="form-row ">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="id-tahun">Tahun</label>
+                                        <select id="id-tahun" class="form-control input-sm custom-select" name="tahun">
+                                            <option value="0">--Pilih Tahun--</option>
+                                            <option th:each="d : ${listTahun}"
+                                                    th:value="${d.toString()}" th:text="${d.toString()}">Pilihan
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="id-bulan">Bulan</label>
+                                    <select id="id-bulan" class="form-control input-sm custom-select" name="bulan">
+                                        <option value="0">--Pilih Bulan--</option>
+                                        <option th:each="d, it : ${listBulan}"
+                                                th:value="${it.index+1}" th:text="${d.toString()}">Pilihan
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="ml-auto">
+                                <button class="btn btn-lg btn-danger" type="submit">
+                                    <i class="fa fa-calendar"></i> Generate Hari Kerja
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

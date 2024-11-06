@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Jam Kerja</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div th:if="${!#strings.isEmpty(message)}" class="alert alert-danger alert-dismissable">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <form method="get" class="form-group mb-4">
+                <input class="form-control mb-2" type="text" placeholder="Cari nama" name="key"
+                       th:value="${key}">
+                <div class="d-flex">
+                    <a th:href="@{/pusat/jam-kerja/form}" class="btn btn-success">
+                        <i class="fa fa-plus"></i> Tambah
+                    </a>
+                    <div class="ml-auto">
+                        <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a th:href="@{/home}" href="#"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a th:href="@{/pusat/jam-kerja/}" href="#"><em class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    List Jam Kerja
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Datang</th>
+                                <th>Pulang</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="d : ${data.content}">
+                                <td th:text="${d.nama}">Nama</td>
+                                <td th:text="${d.datang}">Datang</td>
+                                <td th:text="${d.pulang}">Pulang</td>
+                                <td class="text-right">
+                                    <a sec:authorize="hasAnyAuthority('am','pegpst')"
+                                       th:href="@{/pusat/jam-kerja/form(id=${d.id})}"
+                                       class="btn btn-white btn-sm" title="Edit">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </a>
+                                    <a sec:authorize="hasAnyAuthority('am','pegpst')"
+                                       th:href="@{/pusat/jam-kerja/delete(id=${d.id})}"
+                                       class="btn btn-danger btn-sm" title="Delete">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

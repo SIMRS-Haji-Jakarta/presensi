@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sd="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      xmlns:th="http://www.thymeleaf.org">>
+<head>
+    <meta charset="UTF-8">
+    <title>Pengajuan Ketidakhadiran</title>
+    <div layout:fragment="assets">
+        <link rel="stylesheet" th:href="@{/assets/vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker.css}">
+        <link rel="stylesheet" th:href="@{/assets/vendor/select2/dist/css/select2.css}">
+        <style>
+            /* Height fix for select2 */
+            .select2-container .select2-selection--single, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 34px;
+            }
+
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                line-height: 34px;
+            }
+        </style>
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <form class="form-group mb-4" method="get">
+                <div class="form-row ">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label class="col-form-label" for="id-nama">Nama Pegawai</label>
+                            <input class="form-control input-sm" id="id-nama" name="nama" th:value="${nama}">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label class="col-form-label" for="id-mulai">Periode Mulai</label>
+                                <div class="input-group date">
+                                    <input class="form-control tanggal" id="id-mulai" name="mulai" th:value="${mulai}"
+                                           type="text">
+                                    <span class="input-group-append input-group-addon">
+                                        <span class="input-group-text far fa-clock"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label class="col-form-label" for="id-selesai">Periode Selesai</label>
+                                <div class="input-group date">
+                                    <input class="form-control tanggal" id="id-selesai" name="selesai"
+                                           th:value="${selesai}"
+                                           type="text">
+                                    <span class="input-group-append input-group-addon">
+                                        <span class="input-group-text far fa-clock"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label class="col-form-label" for="id-status">Status</label>
+                                <select class="form-control input-sm custom-select" id="id-status" name="status"
+                                        style="width: 100%;">
+                                    <option></option>
+                                    <option th:each="d : ${listStatus}"
+                                            th:selected="${d.id == status?.id}"
+                                            th:text="${d.nama}" th:value="${d.id}">Pilihan
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="ml-auto">
+                        <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <div class="card card-default">
+        <div class="card-header text-bold">
+            <div class="float-right">
+                <a href="#" th:href="@{/home}"><em class="px-2 fa fa-home fa-lg text-success"></em></a>
+                <a href="#" th:href="@{/rshaji/verifikasi/pengajuan}"><em class="px-2 fa fa-redo fa-lg"></em></a>
+            </div>
+            Verifikasi Pengajuan Ketidakhadiran
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal Kirim</th>
+                        <th>ID Absen</th>
+                        <th>Nama</th>
+                        <th>Unit</th>
+                        <th>Tanggal Mulai</th>
+                        <th>Tanggal Selesai</th>
+                        <th>Jenis</th>
+                        <th>Status</th>
+                        <th>Verifikasi</th>
+                        <th>Catatan</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d : ${data.content}">
+                        <td th:text="${dStat.index+1}">No</td>
+                        <td th:text="${#temporals.format(d.tanggal, 'yyyy-MM-dd')}">Tanggal Kirim</td>
+                        <td th:text="${d.pegawai?.nomorAbsen}">ID Absen</td>
+                        <th:block th:if="${d.pegawai != null}">
+                            <td th:text="${d.pegawai?.gelarDepan == null ? '' : d.pegawai?.gelarDepan + ' '} + ${d.pegawai?.nama} + ${d.pegawai?.gelarBelakang == null ? '' : ' ' + d.pegawai?.gelarBelakang}">
+                                Nama
+                            </td>
+                        </th:block>
+                        <td th:text="${d.pegawai?.unitKerjaPresensi?.unit?.nama}">Unit</td>
+                        <td th:text="${d.tanggalMulai}">Tanggal Mulai</td>
+                        <td th:text="${d.tanggalSelesai}">Tanggal Selesai</td>
+                        <td th:text="${d.statusPresensi?.nama}">Jenis</td>
+                        <td>
+                                  <span class="badge"
+                                        th:classappend="${d.statusVerifikasi?.id=='7997-4'} ? 'badge-danger' : ( ${d.statusVerifikasi?.id=='7997-5'} ? 'badge-success' : '' )"
+                                        th:text="${d.statusVerifikasi?.nama}">Status
+                                </span>
+                        </td>
+                        <td>
+                            <th:block
+                                    th:unless="${d.statusVerifikasi?.id == '7997-4' or d.statusVerifikasi?.id == '7997-3' or d.statusVerifikasi?.id == '7997-5' }">
+                                <a class="btn btn-white btn-sm"
+                                   sec:authorize="hasAnyAuthority('am','rshaji')"
+                                   th:attr="onclick='javascript:showModalView(\'' + ${d.id} +'\');'"
+                                   th:href="@{#}" title="Lihat Detil">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                                <a class="btn btn-danger btn-sm"
+                                   sec:authorize="hasAnyAuthority('am','rshaji')"
+                                   th:href="@{/rshaji/verifikasi/pengajuan/delete(id=${d.id})}" title="Hapus">
+                                    <i class="fa fa-trash-alt"></i>
+                                </a>
+                            </th:block>
+                            <th:block
+                                    th:if="${d.statusVerifikasi?.id == '7997-4' or d.statusVerifikasi?.id == '7997-5' }">
+                                <a class="btn btn-white btn-sm"
+                                   sec:authorize="hasAnyAuthority('am','rshaji')"
+                                   th:attr="onclick='javascript:showModalView(\'' + ${d.id} +'\');'"
+                                   th:href="@{#}" title="Lihat Detil">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </th:block>
+                        </td>
+                        <td th:text="${d.catatan==null ? '-' : d.catatan}">No</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex">
+                <div sd:pagination-summary="">Showing 1 to 10 of 57 entries</div>
+                <div class="ml-auto">
+                    <ul class="pagination" sd:pagination="full" sd:pagination-split="7">
+                        <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
+                        <li class="disabled">
+                            <a aria-label="Previous" href="#">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="#">1
+                                <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.js}"></script>
+    <script th:src="@{/assets/vendor/bootstrap-filestyle/src/bootstrap-filestyle.js}"></script>
+    <script th:src="@{/assets/vendor/select2/dist/js/select2.full.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        function showModalView(id) {
+            $.ajax({
+                url: "/rshaji/verifikasi/pengajuan/view/" + id,
+                success: function (data) {
+                    $("#holder-view-modal").html(data);
+                    $("#view-modal").modal("show");
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('.input-group.date').datepicker({
+                format: 'yyyy-mm-dd',
+                todayHighlight: true
+            });
+            $('#id-unit').select2({
+                placeholder: "Pilih Unit",
+                width: 'resolve',
+                allowClear: true
+            });
+            $('#id-status').select2({
+                placeholder: "Pilih Status",
+                width: 'resolve',
+                allowClear: true
+            });
+        });
+    </script>
+    <div id="holder-view-modal"></div>
+</div>
+<div aria-hidden="true" aria-labelledby="view-modal-in" class="modal fade" id="view-modal"
+     role="dialog"
+     th:fragment="modalViewPengajuan">
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="view-modal-in">Lihat Detil Pengajuan Ketidakhadiran</h4>
+                <button aria-label="Close" class="close" data-dismiss="modal" onClick="window.location.reload();"
+                        type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/" class="form-horizontal" method="post" th:action="@{/rshaji/verifikasi/pengajuan}"
+                  th:object="${p}">
+
+                <div class="modal-body">
+
+                    <input name="id" th:value="${p.id}" type="hidden"/>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-4 mb-2 pl-3">Tanggal Kirim</label>
+                        <div>
+                            <span class="mb-1 text-bold"
+                                  th:text="${#temporals.format(p.tanggal, 'yyyy-MM-dd')}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-4 mb-2 pl-3">ID Absen</label>
+                        <div>
+                            <span class="mb-1 text-bold"
+                                  th:text="${p.pegawai?.nomorAbsen}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-4 mb-2 pl-3">Nama</label>
+                        <div>
+                            <th:block th:if="${p.pegawai != null}">
+                                <span class="mb-1 text-bold"
+                                      th:text="${p.pegawai?.gelarDepan == null ? '' : p.pegawai?.gelarDepan + ' '} + ${p.pegawai?.nama} + ${p.pegawai?.gelarBelakang == null ? '' : ' ' + p.pegawai?.gelarBelakang}">
+                                    Nama
+                                </span>
+                            </th:block>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-4 mb-2 pl-3">Deskripsi</label>
+                        <div>
+                            <span class="mb-1 text-bold"
+                                  th:utext="${p.deskripsi}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-4 mb-2 pl-3">Tanggal Mulai</label>
+                        <div>
+                            <span class="mb-1 text-bold"
+                                  th:text="${p.tanggalMulai}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-4 mb-2 pl-3">Tanggal Selesai</label>
+                        <div>
+                            <span class="mb-1 text-bold"
+                                  th:text="${p.tanggalSelesai}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-4 mb-2 pl-3">URL Bukti</label>
+                        <div class="col-sm-8" style="margin-left: -2em;">
+                            <div class="container-fluid">
+                                <th:block th:if="${!isFileExists}">
+                                    <span class="btn btn-white">
+                                        <i class="fa fa-stop"> Berkas ini tidak ditemukan</i></span>
+                                </th:block>
+                                <th:block th:if="${isFileExists}">
+                                    <object th:if="${!p.isUrl}" class="embed-responsive embed-responsive-4by3"
+                                            th:data="${p.urlBukti}"
+                                            th:attr="type = ${mimeType}">
+                                        <p>Berkas ini tidak mendukung lihat secara langsung. Silahkan untuk mendowload
+                                            berkas
+                                        </p>
+                                    </object>
+                                    <object th:if="${p.isUrl}" class="embed-responsive embed-responsive-4by3"
+                                            th:data="${p.urlShare}"
+                                            th:attr="type = ${mimeType}">
+                                        <p>Berkas ini tidak mendukung lihat secara langsung. Silahkan untuk mendowload
+                                            berkas
+                                        </p>
+                                    </object>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+
+                    <th:block th:if="${isFileExists}">
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-4 mb-2 pl-3"></label>
+                            <div class="mb-1" th:if="${!p.isUrl}">
+                                <a class="btn btn-white"
+                                   th:href="${p.urlBukti}"
+                                   title="Lihat Utuh Berkas">
+                                    <i class="fa fa-search"> </i></a>
+                                <a class="btn btn-white"
+                                   th:href="@{/rshaji/verifikasi/pengajuan/berkas/{id}(id=${p.id})}"
+                                   title="Download Berkas">
+                                    <i class="fa fa-download"> </i></a>
+                            </div>
+                            <div class="mb-1" th:if="${p.isUrl}">
+                                <a class="btn btn-white"
+                                   th:href="${p.urlShare}"
+                                   title="Lihat Utuh Berkas">
+                                    <i class="fa fa-search"> </i></a>
+                                <a class="btn btn-white"
+                                   th:href="${p.urlShare}"
+                                   title="Download Berkas">
+                                    <i class="fa fa-download"> </i></a>
+                            </div>
+                        </div>
+                    </th:block>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-4 mb-2 pl-3">Jenis</label>
+                        <div>
+                            <span class="mb-1 text-bold"
+                                  th:text="${p.statusPresensi?.nama}"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-4 mb-2 pl-3">Status Verfikasi</label>
+                        <div>
+                            <th:block
+                                    th:if="${p.statusVerifikasi?.id == '7997-5' or p.statusVerifikasi?.id == '7997-4'}">
+                                <span class="badge"
+                                      th:classappend="${p.statusVerifikasi?.id=='7997-4'} ? 'badge-danger' : ( ${p.statusVerifikasi?.id=='7997-5'} ? 'badge-success' : '' )"
+                                      th:text="${p.statusVerifikasi?.nama}">Status
+                                </span>
+                            </th:block>
+                            <th:block
+                                    th:unless="${p.statusVerifikasi?.id == '7997-5' or p.statusVerifikasi?.id == '7997-4'}">
+                            <span class="mb-1 text-bold">
+                                <label class="radio-inline col-form-label mb-2 mr-2 text-success"><input
+                                        name="statusVerifikasi"
+                                        type="radio"
+                                        value="7997-5">
+                                Diterima</label>
+                                <label class="radio-inline col-form-label mb-2 mr-2 text-danger"><input
+                                        name="statusVerifikasi"
+                                        type="radio"
+                                        value="7997-4">
+                                Ditolak</label>
+                            </span>
+                            </th:block>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-4 mb-2 pl-3">Catatan</label>
+                        <div class="col-sm-8" style="margin-left: -1em;">
+                            <th:block
+                                    th:if="${p.statusVerifikasi?.id == '7997-5' or p.statusVerifikasi?.id == '7997-4'}">
+                                    <span class="mb-1 text-bold"
+                                          th:utext="${p.catatan}"></span>
+                            </th:block>
+                            <th:block
+                                    th:unless="${p.statusVerifikasi?.id == '7997-5' or p.statusVerifikasi?.id == '7997-4'}">
+                                        <textarea class="form-control mb-1 text-bold"
+                                                  name="catatan" placeholder="Masukkan Catatan"
+                                                  style="min-width: 100%;  flex: 0 0 50%;"></textarea>
+                            </th:block>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal" onClick="window.location.reload();"
+                            type="button">Close
+                    </button>
+                    <th:block th:if="${p.statusVerifikasi?.id != '7997-5' and p.statusVerifikasi?.id != '7997-4'}">
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </th:block>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

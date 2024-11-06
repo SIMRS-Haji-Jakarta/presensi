@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
+    <meta content="Presensi Online UIN Jakarta" name="description">
+    <link rel="icon" th:href="@{/assets/img/favicon.ico}" type="image/x-icon">
+    <title layout:title-pattern="$CONTENT_TITLE | $LAYOUT_TITLE">Presensi Online RS Haji UIN Jakarta</title>
+
+    <link rel="stylesheet" th:href="@{/assets/vendor/@fortawesome/fontawesome-free/css/brands.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendor/@fortawesome/fontawesome-free/css/regular.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendor/@fortawesome/fontawesome-free/css/solid.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendor/@fortawesome/fontawesome-free/css/fontawesome.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendor/animate.css/animate.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendor/whirl/dist/whirl.css}">
+
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/app.css}">
+
+    <div layout:fragment="assets" th:remove="tag"></div>
+</head>
+
+<body class="layout-h">
+<div class="wrapper">
+    <header class="topnavbar-wrapper">
+        <nav class="navbar topnavbar navbar-expand-lg navbar-light">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#/" th:href="@{/home}">
+                    <div class="brand-logo">
+                        <img alt="Presensi Online Logo" class="img-fluid" height="34px" th:src="@{/assets/img/logo.png}"
+                             width="85px">
+                    </div>
+                    <div class="brand-logo-collapsed">
+                        <img alt="Presensi Online Logo" class="img-fluid" th:src="@{/assets/img/logo-single.png}">
+                    </div>
+                </a>
+                <button class="navbar-toggler" data-target="#topnavbar" data-toggle="collapse" type="button">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
+            <div class="navbar-collapse collapse" id="topnavbar">
+                <!-- Menu -->
+                <ul class="nav navbar-nav mr-auto flex-column flex-lg-row">
+                    <div sec:authorize="hasAnyAuthority('am')" th:remove="tag">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#system">System</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="pengguna.html" th:href="@{/pusat/pengguna/}">Pengguna</a>
+                            </div>
+                        </li>
+                    </div>
+                    <div sec:authorize="hasAnyAuthority('am','pegpst')" th:remove="tag">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#pegawai">Pegawai</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="jabatan.html" th:href="@{/pusat/jabatan/}">Jabatan</a>
+                                <a class="dropdown-item" href="unit.html" th:href="@{/pusat/unit/}">Unit</a>
+                                <a class="dropdown-item" href="unit-kerja.html" th:href="@{/pusat/unit-kerja/}">Unit Kerja</a>
+                                <a class="dropdown-item" href="pegawai.html" th:href="@{/pusat/pegawai/}">Pegawai</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#master">Master</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="admin-unit.html" th:href="@{/pusat/admin-unit/}">Admin Unit</a>
+                                <a class="dropdown-item" href="jam-kerja.html" th:href="@{/pusat/jam-kerja/}">Jam Kerja</a>
+                                <a class="dropdown-item" href="jam-kerja-shift.html" th:href="@{/pusat/jam-kerja-shift/}">Jam Kerja Shift</a>
+                                <a class="dropdown-item" href="hari-kerja.html" th:href="@{/pusat/hari-kerja/}">Hari Kerja</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#integrasi-presensi">Integrasi Presensi</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="mesin-presensi.html" th:href="@{/pusat/mesin-presensi/}">Mesin Presensi</a>
+                                <a class="dropdown-item" href="mesin-presensi-unit.html" th:href="@{/pusat/mesin-presensi-unit/}">Mesin Presensi Unit</a>
+                                <a class="dropdown-item" href="mesin-presensi-pegawai.html" th:href="@{/pusat/mesin-presensi-pegawai/}">Mesin Presensi Pegawai</a>
+                                <a class="dropdown-item" href="sinkronisasi.html" th:href="@{/pusat/sinkronisasi/}">Sinkronisasi</a>
+                                <a class="dropdown-item" href="face-pegawai.html" th:href="@{/pusat/face-pegawai/}">Face Pegawai</a>
+                                <a class="dropdown-item" href="copy-pegawai.html" th:href="@{/pusat/mesin-presensi-copy-pegawai/}">Copy Pegawai</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#verifikasi">Shift</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="pegawai-shift.html" th:href="@{/pusat/pegawai-shift/}">Pegawai
+                                    Shift</a>
+                                <a class="dropdown-item" href="jadwal-pegawai-shift.html" th:href="@{/pusat/jadwal-pegawai-shift/}">Jadwal Pegawai Shift</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#verifikasi">Verifikasi</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="pengajuan.html" th:href="@{/pusat/verifikasi/pengajuan/}">Ketidakhadiran</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#laporan">Foto Profile</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/foto-profile/}">Daftar Foto Pegawai</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/foto-profile/rekapfotoprofile}">Laporan Foto Valid</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/foto-profile/rekapbelumuploadfoto}">Laporan Belum Upload Foto</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#laporan">Laporan</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/absensi}">Laporan Absensi</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/inout}">Laporan In Out</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/rekappegawai}">Laporan Rekapitulasi Absensi Pegawai</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/rekap-absensi-csv}">Laporan Rekapitulasi Absensi Csv</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/harian}">Laporan Rekap Harian</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/rekapketidakhadiran}">Laporan Rekap Ketidakhadiran</a>
+                            </div>
+                        </li>
+                    </div>
+
+                    <div sec:authorize="hasAnyAuthority('remun')" th:remove="tag">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#laporan">Laporan</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/absensi}">Laporan Absensi</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/inout}">Laporan In Out</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/rekappegawai}">Laporan Rekapitulasi Absensi Pegawai</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/rekap-absensi-csv}">Laporan Rekapitulasi Absensi Csv</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/harian}">Laporan Rekap Harian</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/pusat/laporan/rekapketidakhadiran}">Laporan Rekap Ketidakhadiran</a>
+                            </div>
+                        </li>
+                    </div>
+
+                    <div sec:authorize="hasAuthority('aunit')" th:remove="tag">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#verifikasi">Mesin Presensi</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="mesin-presensi-pegawai.html" th:href="@{/admin-unit/mesin-presensi-pegawai/}">Mesin Presensi Pegawai</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#verifikasi">Shift</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="pegawaishift.html" th:href="@{/admin-unit/pegawai-shift-unit/}">Pegawai Shift</a>
+                                <a class="dropdown-item" href="jadwalpegawaishift.html" th:href="@{/admin-unit/jadwal-pegawai-shift-unit/}">Jadwal Pegawai Shift</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-toggle-nocaret"
+                               data-toggle="dropdown" href="#laporan">Laporan</a>
+                            <div class="dropdown-menu animated fadeIn">
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/admin-unit/laporan/in-out}">In/Out Detail</a>
+                                <a class="dropdown-item" href="dashboard.html" th:href="@{/admin-unit/laporan/rekap-pegawai}">Rekap Pegawai</a>
+                            </div>
+                        </li>
+                    </div>
+
+                </ul>
+
+                <ul class="navbar-nav flex-row">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/logoff}" title="Keluar">
+                            <em class="fa fa-sign-out-alt fa-lg"></em></a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <section class="section-container">
+        <div class="content-wrapper" layout:fragment="content">
+        </div>
+    </section>
+
+    <section class="section-container" style="max-width: 100%">
+        <div class="content-wrapper" layout:fragment="content-print">
+        </div>
+    </section>
+
+    <footer class="text-center"><span>&copy; 2020 Pustipanda UIN Syarif Hidayatullah Jakarta</span></footer>
+</div>
+
+<script th:src="@{/assets/vendor/modernizr/modernizr.custom.js}"></script>
+<script th:src="@{/assets/vendor/jquery/dist/jquery.js}"></script>
+<script th:src="@{/assets/vendor/popper.js/dist/umd/popper.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/dist/js/bootstrap.js}"></script>
+
+<div layout:fragment="scripts" th:remove="tag"></div>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162617330-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'UA-162617330-1');
+</script>
+</body>
+</html>

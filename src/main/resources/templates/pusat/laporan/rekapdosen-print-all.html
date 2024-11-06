@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">>
+<head>
+    <meta charset="UTF-8">
+    <title>Rekap Pegawai</title>
+    <div layout:fragment="assets">
+        <style media="print" type="text/css">
+            @page {
+                size: auto;
+            }
+        </style>
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-body">
+                    <div>
+                        <div class="text-center">
+                            <h4 class="text-md mt-3">REKAPITULASI KEHADIRAN PEGAWAI</h4>
+                            <h4 class="text-md mt-3">UIN SYARIF HIDAYATULLAH JAKARTA</h4>
+                            <th:block th:if="${unit != null}">
+                                <h4 class="text-md mt-3" th:text="'UNIT: ' + ${#strings.toUpperCase(unit.nama)}"></h4>
+                            </th:block>
+                            <p class="text-bold">PERIODE: <span th:text="${#temporals.format(mulai, 'dd MMMM yyyy')}">Tanggal Mulai</span>
+                                s.d <span th:text="${#temporals.format(selesai, 'dd MMMM yyyy')}"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive table-bordered">
+                        <table class="table table-sm text-cente">
+                            <thead class="text-center text-bold">
+                            <tr>
+                                <th rowspan="3">No</th>
+                                <th rowspan="3">Nama</th>
+                                <th rowspan="3">No Absen</th>
+                                <th rowspan="3">Gol</th>
+                                <th rowspan="3">Jabatan</th>
+                                <td rowspan="2">Jml Hadir</td>
+                                <td colspan="4">Perincian Pelaksanaan Harian Kerja</td>
+                            </tr>
+                            <tr>
+                                <td>DL</td>
+                                <td>Tidak Absen Datang / Pulang</td>
+                                <td>Total Jam Kerja</td>
+                                <td>Keterangan</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <th:block th:unless="${#lists.isEmpty(data)}">
+                                <tr th:each="d : ${data}">
+                                    <td th:text="${dStat.index+1}">No</td>
+                                    <td th:utext="${d.nama +'<br /> NIP. ' + (d.nip == null ? '' : d.nip)}">Nama</td>
+                                    <td th:text="${d.noAbsen}"></td>
+                                    <td th:text="${d.golongan}"></td>
+                                    <td th:text="${d.jabatan}"></td>
+                                    <td th:text="${d.hadir}">21</td>
+                                    <td th:text="${d.dinasLuar}">0</td>
+                                    <td th:text="${d.tidakAbsen}">0</td>
+                                    <td><span
+                                            th:text="${ tJam+ ':' + tMenit}"
+                                            th:with="tJamKerja=${d.jamKerja == null ? 0 : d.jamKerja}, tJam=${currentService.getExactHourNumber(tJamKerja)}, tSisa=${tJamKerja % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}">00:00</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr class="text-bold">
+                                    <td colspan="5">TOTAL</td>
+                                    <td><span th:text="${#aggregates.sum(data.![hadir])}">21</span></td>
+                                    <td><span th:text="${#aggregates.sum(data.![dinasLuar])}">0</span></td>
+                                    <td><span th:text="${#aggregates.sum(data.![tidakAbsen])}">1</span></td>
+                                    <td><span
+                                            th:text="${ tJam+ ':' + tMenit}"
+                                            th:with="tJamKerja=${#aggregates.sum(data.![jamKerja] == null ? 0 : data.![jamKerja])}, tJam=${currentService.getExactHourNumber(tJamKerja)}, tSisa=${tJamKerja % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}">00:00</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </th:block>
+                            </tbody>
+                        </table>
+
+                        <div class="mt-3">
+                            <div class="float-left">
+                                <p class="text-bold">Catatan:</p>
+                                <ol type="a">
+                                    <li>Tidak absen datang/pulang dianggap tidak masuk kerja, dan tidak dihitung
+                                        akumulasi jam kerja
+                                    </li>
+                                    <li>Dosen Dinas Luar (DL) dihitung 3 jam kerja per hari</li>
+                                </ol>
+                            </div>
+                            <div class="float-right">
+                                <div class="clearfix">
+                                    Jakarta, <span
+                                        th:text="${#dates.format(#dates.createNow(), 'dd MMMM yyyy')}"></span>
+                                </div>
+                                <div class="clearfix">
+                                    <span th:text="${pejabat == null ? '' : pejabat?.jabatanPegawai?.nama}"></span>
+                                </div>
+                                <div class="mt-5">
+                                    <div class="clearfix">
+                                        <span th:text="${pejabat == null ? '' : pejabat?.nama}"></span>
+                                    </div>
+                                    <div class="clearfix">
+                                        <span th:text="${pejabat == null ? '' : 'NIP. ' + pejabat?.nip}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

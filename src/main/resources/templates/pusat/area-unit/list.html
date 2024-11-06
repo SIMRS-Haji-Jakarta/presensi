@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Area Absensi Unit</title>
+
+    <div layout:fragment="assets">
+        <link rel="stylesheet" th:href="@{/assets/vendor/select2/dist/css/select2.css}">
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <form class="form-group mb-4" method="get">
+                <div class="form-row ">
+                    <div class="col-sm-12">
+                        <div class="form-group" id="parent-unit-kerja-search">
+                            <label class="col-form-label" for="list-unitkerja">Unit Kerja</label>
+                            <select class="form-control" id="list-unitkerja"
+                                    name="unitCari">
+                                <option></option>
+                                <option th:each="p : ${listUnitkerja}"
+                                        th:selected="${unitCari == p}"
+                                        th:text="${p.id} + ' - ' + ${p.unit?.nama} + ' - ' + ${p.nama}"
+                                        th:value="${p.id}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <button class="btn btn-success" data-target="#tambah-modal" data-toggle="modal" type="button">
+                        <i class="fa fa-plus"></i> Tambah
+                    </button>
+                    <div class="ml-auto">
+                        <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a href="#" th:href="@{/home}"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a href="#" th:href="@{/pusat/area-unit/}"><em class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    Data Area Unit
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" id="table-content">
+                            <thead>
+                            <tr>
+                                <th>Unit Kerja</th>
+                                <th>Daftar Area Absensi</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="d : ${data.content}">
+                                <td th:text="${d.unitKerjaPresensi.nama}">Nama</td>
+                                <td>
+                                    <th:block th:each="p : ${d.area}">
+                                        <p class="badge badge-success"
+                                           th:text="${p.nama}">
+                                        </p>
+                                        <br/>
+                                    </th:block>
+                                </td>
+                                <td style="width: 0.1em;"><a class="btn btn-white btn-sm" href="javascript:void(0)"
+                                                             onclick="updateStatus(this.getAttribute('data-id'));"
+                                                             th:data-id="${d.id}"
+                                                             th:title="${d.status} ? 'Aktif. Klik untuk me-nonaktifkan' : 'Tidak Aktif. Klik untuk mengaktifkan'">
+                                    <th:block
+                                            th:utext="${d.status} ? '<i class=\'fa fa-stack fa-check\' style=\'color:#08852a;\'></i>' : '<i class=\'fa fa-stack fa-stop-circle\' style=\'color:#ed1313;\'></i>'"></th:block>
+                                </a>
+                                </td>
+                                <td class="text-right">
+                                    <button class="btn btn-white" sec:authorize="hasAnyAuthority('am','pegpst')"
+                                            th:attr="onclick='javascript:showModalEdit(\'' + ${d.id} +'\');'"
+                                            title="Ubah Data"
+                                            type="button">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </button>
+                                    <a th:href="@{/pusat/area-unit/delete(id=${d.id})}">
+                                        <button class="btn btn-white" sec:authorize="hasAnyAuthority('am','pegpst')"
+                                                title="Hapus Data"
+                                                type="button">
+                                            <i class="fa fa-trash">
+                                            </i>
+                                        </button>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex">
+                        <div sd:pagination-summary="">Showing 1 to 10 of 57 entries</div>
+                        <div class="ml-auto">
+                            <ul class="pagination" sd:pagination="full" sd:pagination-split="7">
+                                <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
+                                <li class="disabled">
+                                    <a aria-label="Previous" href="#">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <a href="#">1
+                                        <span class="sr-only">(current)</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/select2/dist/js/select2.full.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        function showModalEdit(id) {
+            $.ajax({
+                url: "edit/" + id,
+                success: function (data) {
+                    $("#holder-edit-modal").html(data);
+                    $("#edit-modal").modal("show");
+                }
+            });
+        }
+
+        function updateStatus(id) {
+            $.ajax({
+                url: "update/" + id,
+                success: function (data) {
+                    reload();
+                }
+            });
+        }
+
+        function reload() {
+            $("#table-content").load(window.location.href + " #table-content");
+        }
+
+        $(document).ready(function () {
+            $('#id-unitkerja').select2({
+                placeholder: "Ketikan nama Unit Kerja",
+                allowClear: true,
+                width: 'resolve',
+                dropdownParent: $('#tambah-modal')
+            });
+
+            $('#id-area').select2({
+                placeholder: "Ketikan nama area",
+                allowClear: true,
+                width: 'resolve'
+            });
+
+            $('#list-unitkerja').select2({
+                placeholder: "Ketikan nama Unit Kerja",
+                allowClear: true,
+                width: 'resolve'
+            });
+
+            $('.search-select-multiple').select2({
+                dropdownAutoWidth: true,
+                multiple: true,
+                width: '100%',
+                height: '30px',
+                placeholder: "Select",
+                allowClear: true
+            });
+            $('.select2-search__field').css('width', '100%');
+
+        });
+    </script>
+
+    <div aria-hidden="true" aria-labelledby="tambah-modal-in" class="modal fade" id="tambah-modal" role="dialog"
+         tabindex="-1">
+
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="tambah-modal-in">Tambah Area Absensi Unit</h4>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="/" class="form-horizontal" method="post" th:action="@{/pusat/area-unit/form}"
+                      th:object="${areaUnit}">
+                    <input th:field="*{id}" type="hidden"/>
+                    <div class="modal-body">
+                        <div class="form-group row mb-2">
+                            <label class="col-md-2 col-form-label mb-2">Unit Kerja</label>
+                            <div class="col-md-9 addVerticalScroll">
+                                <select class="form-control" id="id-unitkerja"
+                                        name="unitKerjaPresensi"
+                                        style="width: 100%"
+                                        th:field="*{unitKerjaPresensi}">
+                                    <option value=""></option>
+                                    <option th:each="p : ${listUnitkerja}"
+                                            th:text="${p.id} + ' - ' + ${p.unit?.nama} + ' - ' + ${p.nama}"
+                                            th:value="${p.id}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-md-2 col-form-label mb-2">Daftar Area Absensi</label>
+                            <div class="col-md-9 addVerticalScroll">
+                                <select class="form-control" id="id-area"
+                                        multiple="multiple"
+                                        name="area"
+                                        style="width: 100%"
+                                        th:field="*{area}">
+                                    <option th:each="p : ${listArea}"
+                                            th:text="${p.nama}"
+                                            th:value="${p.id}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-md-2 col-form-label mb-2">Status</label>
+                            <div class="col-xl-6 col-10">
+                                <ul class="list-group">
+                                    <li class="list-group-item border-0 p-0">
+                                        <input name="status" type="radio" value="true"> Aktif<br>
+                                        <input checked name="status" type="radio" value="false"> Tidak Aktif<br>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="holder-edit-modal"></div>
+</div>
+
+<div aria-hidden="true" aria-labelledby="edit-modal-in" class="modal fade" id="edit-modal"
+     role="dialog"
+     th:fragment="modalEditAreaUnit">
+
+    <script th:src="@{/assets/vendor/select2/dist/js/select2.full.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+
+        $(document).ready(function () {
+            $('#id-area-edit').select2({
+                placeholder: " Ketikan nama Unit Kerja",
+                allowClear: true,
+                width: 'resolve'
+            });
+            $('#id-unitkerja-edit').select2({
+                allowClear: true,
+                width: 'resolve'
+            });
+            $('.search-select-multiple').select2({
+                dropdownAutoWidth: true,
+                multiple: true,
+                width: '100%',
+                height: '30px',
+                placeholder: "Select",
+                allowClear: true
+            });
+            $('.select2-search__field').css('width', '100%');
+        });
+
+    </script>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="edit-modal-in">Edit Area Unit</h4>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/" class="form-horizontal" method="post" th:action="@{/pusat/area-unit/form}"
+                  th:object="${areaUnit}">
+                <input th:field="*{id}" type="hidden"/>
+                <input th:field="*{unitKerjaPresensi}" type="hidden"/>
+                <div class="modal-body">
+
+                    <div class="form-group row mb-2">
+                        <label class="col-md-2 col-form-label mb-2">Unit Kerja Presensi</label>
+                        <div class="col-md-9 addVerticalScroll">
+                            <select class="form-control" disabled id="id-unitkerja-edit" style="width: 100%"
+                                    th:disabled="disabled" th:field="*{unitKerjaPresensi}">
+                                <option th:text="${areaUnit.unitKerjaPresensi.id} + ' - ' + ${areaUnit.unitKerjaPresensi.unit?.nama} + ' - ' + ${areaUnit.unitKerjaPresensi.nama}"
+                                        th:value="${areaUnit.unitKerjaPresensi.id}">
+                                </option>
+
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-md-2 col-form-label mb-2">Daftar Area Absensi</label>
+                        <div class="col-md-9 addVerticalScroll">
+                            <select class="form-control" id="id-area-edit"
+                                    multiple="multiple"
+                                    name="area"
+                                    style="width: 100%"
+                                    th:field="*{area}">
+                                <option th:each="p : ${listArea}"
+                                        th:text="${p.nama}"
+                                        th:value="${p.id}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-md-2 col-form-label mb-2">Status</label>
+                        <div class="col-xl-6 col-10">
+                            <ul class="list-group">
+                                <li class="list-group-item border-0 p-0">
+                                    <input name="status" th:checked="*{status}" type="radio" value="true"> Aktif<br>
+                                    <input name="status" th:checked="*{status == false}" type="radio" value="false">
+                                    Tidak Aktif<br>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                    <button class="btn btn-primary" type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

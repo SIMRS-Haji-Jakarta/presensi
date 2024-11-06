@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Reset Absensi</title>
+
+    <div layout:fragment="assets">
+        <link rel="stylesheet" th:href="@{/assets/vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker.css}">
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div th:if="${!#strings.isEmpty(message)}" class="alert alert-danger alert-dismissable">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <form method="get" class="form-group mb-4">
+                <div class="form-row ">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label class="col-form-label" for="id-tanggal">Tanggal</label>
+                                <div class="input-group date">
+                                    <input class="form-control" type="text" id="id-tanggal" name="tanggal"
+                                           th:value="${tanggal}">
+                                    <span class="input-group-append input-group-addon">
+                                        <span class="input-group-text far fa-clock"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="col-form-label" for="id-nama">Nama</label>
+                            <input id="id-nama" class="form-control input-sm" name="nama" th:value="${nama}">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="ml-auto">
+                        <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a th:href="@{/home}" href="#"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a th:href="@{/pusat/reset/}" href="#"><em class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    List Absensi
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>NIP</th>
+                                <th>Absen</th>
+                                <th>Datang</th>
+                                <th>Pulang</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="d : ${data.content}">
+                                <td th:text="${d.pegawai.nama}">Nama</td>
+                                <td th:text="${d.pegawai.nip}">NIP</td>
+                                <td th:text="${d.pegawai.nomorAbsen}">No Absen</td>
+                                <td>
+                                    <span class="d-block mb-1" th:text="${d.waktuIn}"></span>
+                                    <span class="d-block mb-1" th:if="${d.waktuIn != null}">
+                                        <a sec:authorize="hasAnyAuthority('am','pegpst')"
+                                           th:target="_blank"
+                                           th:href="@{https://www.latlong.net/c/?(lat=${d.waktuInLat}, long=${d.waktuInLgn})}"
+                                           class="btn btn-info btn-sm" title="Lokasi Datang">
+                                            <i class="fa fa-map-marker-alt"></i>
+                                        </a>
+                                    </span>
+                                    <form th:if="${d.waktuIn != null}"
+                                          th:action="@{/pusat/reset/datang(absensi=${d.id})}"
+                                          method="post">
+                                        <button class="btn btn-labeled btn-success mb-2" type="submit">
+                                            <span class="btn-label"><i class="fa fa-times"></i></span>Reset Datang
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <span class="d-block mb-1" th:text="${d.waktuOut}"></span>
+                                    <span class="d-block mb-1" th:if="${d.waktuOut != null}">
+                                        <a sec:authorize="hasAnyAuthority('am','pegpst')"
+                                           th:href="@{https://www.latlong.net/c/?(lat=${d.waktuOutLat}, long=${d.waktuOutLgn})}"
+                                           th:target="_blank" class="btn btn-info btn-sm" title="Lokasi Pulang">
+                                            <i class="fa fa-map-marker-alt"></i>
+                                        </a>
+                                    </span>
+                                    <form th:if="${d.waktuOut != null}"
+                                          th:action="@{/pusat/reset/pulang(absensi=${d.id})}"
+                                          method="post">
+                                        <button class="btn btn-labeled btn-danger mb-2" type="submit">
+                                            <span class="btn-label"><i class="fa fa-times"></i></span>Reset Pulang
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="text-right">
+                                    <a sec:authorize="hasAnyAuthority('am','pegpst')"
+                                       th:href="@{/pusat/reset/delete(id=${d.id})}"
+                                       class="btn btn-danger btn-sm" title="Delete">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex">
+                        <div sd:pagination-summary="">Showing 1 to 10 of 57 entries</div>
+                        <div class="ml-auto">
+                            <ul class="pagination" sd:pagination-split="7" sd:pagination="full">
+                                <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
+                                <li class="disabled">
+                                    <a href="#" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <a href="#">1
+                                        <span class="sr-only">(current)</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        $(document).ready(function () {
+            $('#id-tanggal').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

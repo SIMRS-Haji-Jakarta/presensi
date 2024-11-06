@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Jam Kerja</title>
+
+    <div layout:fragment="assets">
+        <link rel="stylesheet" th:href="@{/assets/vendor/bootstrap-clockpicker/dist/css/bootstrap-clockpicker.min.css}">
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div th:if="${!#strings.isEmpty(message)}" class="alert alert-danger alert-dismissable">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a th:href="@{/home}" href="#"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a th:href="@{/pusat/jam-kerja/form(id=${jamKerja.id})}" href="#"><em
+                                class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    Form Jam Kerja
+                </div>
+                <div class="card-body">
+                    <form class="form-horizontal" method="post" th:action="@{/pusat/jam-kerja/form}"
+                          th:object="${jamKerja}" action="/">
+                        <input type="hidden" th:field="*{id}"/>
+
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Nama</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" placeholder="Nama jam kerja" th:field="*{nama}">
+                                <div class="text-danger" th:if="${#fields.hasErrors('nama')}" th:errors="*{nama}">Help
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-md-2 col-form-label mb-2">Jam Datang</label>
+                            <div class="col-xl-6 col-4">
+                                <div class="input-group clockpicker">
+                                    <input type="text" class="form-control" th:field="*{datang}">
+                                    <span class="input-group-append input-group-addon">
+                                        <span class="input-group-text far fa-clock"></span>
+                                    </span>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('datang')}" th:errors="*{datang}">
+                                    Help
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-md-2 col-form-label mb-2">Jam Pulang</label>
+                            <div class="col-xl-6 col-4">
+                                <div class="input-group clockpicker">
+                                    <input type="text" class="form-control" th:field="*{pulang}">
+                                    <span class="input-group-append input-group-addon">
+                                        <span class="input-group-text far fa-clock"></span>
+                                    </span>
+                                </div>
+                                <div class="text-danger" th:if="${#fields.hasErrors('pulang')}" th:errors="*{pulang}">
+                                    Help
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row text-right">
+                            <div class="col-sm-12 col-sm-offset-2">
+                                <button class="btn btn-success" type="submit">Simpan</button>
+                                <button class="btn btn-secondary" type="reset">Reset</button>
+                                <button class="btn btn-warning" onclick="window.history.back()">Kembali</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/bootstrap-clockpicker/dist/js/bootstrap-clockpicker.min.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        $(document).ready(function () {
+            $('.clockpicker').clockpicker({
+                donetext: "Ok"
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

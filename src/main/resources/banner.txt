@@ -1,0 +1,11 @@
+${Ansi.BLUE} ___                 _                                _        
+${Ansi.BLUE}(  _`\              ( )_  _                          ( )       
+${Ansi.BLUE}| |_) ) _   _   ___ | ,_)(_) _ _      _ _   ___     _| |   _ _ 
+${Ansi.BLUE}| ,__/'( ) ( )/',__)| |  | |( '_`\  /'_` )/' _ `\ /'_` | /'_` )
+${Ansi.BLUE}| |    | (_) |\__, \| |_ | || (_) )( (_| || ( ) |( (_| |( (_| |
+${Ansi.BLUE}(_)    `\___/'(____/`\__)(_)| ,__/'`\__,_)(_) (_)`\__,_)`\__,_)
+${Ansi.BLUE}                            | |                                
+${Ansi.BLUE}                            (_)                                
+
+${Ansi.RED} :: Spring Boot ${spring-boot.formatted-version} :: 
+${Ansi.BLUE} -- Aplikasi Absensi - Pustipanda - UIN Jakarta --

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">>
+<head>
+    <meta charset="UTF-8">
+    <title>Rekap Pegawai</title>
+    <div layout:fragment="assets">
+        <link rel="stylesheet" th:href="@{/assets/vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker.css}">
+        <link rel="stylesheet" th:href="@{/assets/vendor/select2/dist/css/select2.css}">
+        <style>
+            /* Height fix for select2 */
+            .select2-container .select2-selection--single, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 34px;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                line-height: 34px;
+            }
+        </style>
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <form class="form-group mb-4" method="get">
+                <div class="form-row ">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label class="col-form-label" for="id-mulai">Periode Mulai</label>
+                                <div class="input-group date">
+                                    <input class="form-control tanggal" id="id-mulai" name="mulai"
+                                           th:value="${mulai !=null ? mulai : #dates.format(#dates.create(#dates.year(#dates.createNow()), #dates.month(#dates.createNow()), 1),'yyyy-MM-dd')}"
+                                           type="text">
+                                    <span class="input-group-append input-group-addon">
+                                        <span class="input-group-text far fa-clock"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label class="col-form-label" for="id-selesai">Periode Selesai</label>
+                                <div class="input-group date">
+                                    <input class="form-control tanggal" id="id-selesai" name="selesai"
+                                           th:value="${selesai !=null ? selesai : #dates.format(#dates.createNow(),'yyyy-MM-dd')}"
+                                           type="text">
+                                    <span class="input-group-append input-group-addon">
+                                        <span class="input-group-text far fa-clock"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="form-group" id="parent-pegawai-search">
+                                <label class="col-form-label" for="id-pegawai-cari">Dosen</label>
+                                <div>
+                                    <select class="form-control input-sm" id="id-pegawai-cari" name="pegawaiCari"
+                                            th:value="${pegawaiCari}">
+                                        <option value=""></option>
+                                        <option th:each="p : ${listDosen}"
+                                                th:text="${p.gelarDepan == null ? '' : p.gelarDepan + ' '} + ${p.nama} + ${p.gelarBelakang == null ? '' : ' ' + p.gelarBelakang}"
+                                                th:value="${p.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <div class="form-group" id="parent-kategori-pegawai">
+                                <label class="col-form-label" for="id-kategori-pegawai">Kategori Dosen</label>
+                                <div>
+                                    <select class="form-control" id="id-kategori-pegawai" name="idKategoriPegawai"
+                                            style="width: 100%">
+                                        <option value=""></option>
+                                        <option th:each="p : ${listKategoriPegawai}"
+                                                th:text="${p.nama}"
+                                                th:value="${p.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="ml-auto">
+                        <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <th:block th:if="${jenisReport == 'Type1'}">
+                <div class="card card-default">
+                    <div class="card-header text-bold">
+                        <div class="float-right">
+                            <a href="#" th:href="@{/home}"><em class="px-2 fa fa-home fa-lg text-success"></em></a>
+                            <a href="#" th:href="@{/admin-unit/laporan/rekap-dosen}"><em class="px-2 fa fa-redo fa-lg"></em></a>
+                        </div>
+                        Rekap Dosen
+                    </div>
+                    <div class="card-body">
+                        <div class="clearfix">
+                            <form method="post" th:action="@{/admin-unit/laporan/rekap-dosen-print}">
+                                <input name="mulai"
+                                       th:value="${mulai !=null ? mulai : #dates.format(#dates.create(#dates.year(#dates.createNow()), #dates.month(#dates.createNow()), 1),'yyyy-MM-dd')}"
+                                       type="hidden"/>
+                                <input name="selesai"
+                                       th:value="${selesai !=null ? selesai : #dates.format(#dates.createNow(),'yyyy-MM-dd')}"
+                                       type="hidden"/>
+                                <input name="idPegawaiCari" th:value="${pegawaiCari?.id}" type="hidden"/>
+                                <button class="btn btn-success float-left" type="submit">Download</button>
+                            </form>
+                        </div>
+                        <div class="row mt-5">
+                            <div class="col-6">
+                                <div class="clearfix">
+                                    <p class="float-left">ID Absen</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${pegawaiCari.nomorAbsen}">1257</span>
+                                    </p>
+                                </div>
+
+                                <div class="clearfix">
+                                    <p class="float-left">Nama</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${pegawaiCari.nama}">Supardi, M.Kom</span></p>
+                                </div>
+
+                                <div class="clearfix">
+                                    <p class="float-left">NIP</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${pegawaiCari.nip==null ? '-' : pegawaiCari.nip}">1234</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="clearfix">
+                                    <p class="float-left">Pangkat/Gol.</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${(pegawaiCari.golongan?.pangkat==null ? '' : pegawaiCari.golongan?.pangkat + '/' + (pegawaiCari.golongan?.nama==null ? '' : pegawaiCari.golongan?.nama))}">Golongan IIIa</span>
+                                    </p>
+                                </div>
+
+                                <div class="clearfix">
+                                    <p class="float-left">Jabatan</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${pegawaiCari.jabatanPegawai?.nama}">Supardi, M.Kom</span>
+                                    </p>
+                                </div>
+
+                                <div class="clearfix">
+                                    <p class="float-left">Unit Kerja</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${pegawaiCari?.unitKerjaPresensi?.nama}">1576</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead class="text-center text-bold">
+                                <tr>
+                                    <td rowspan="2">No</td>
+                                    <td rowspan="2">Bulan</td>
+                                    <td rowspan="2">Jml Hadir</td>
+                                    <td colspan="4">Perincian Pelaksanaan Harian Kerja</td>
+                                </tr>
+                                <tr>
+                                    <td>DL</td>
+                                    <td>Tidak Absen Datang / Pulang</td>
+                                    <td>Total Jam Kerja</td>
+                                    <td>Keterangan</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="d : ${data}">
+                                    <td th:text="${dStat.index+1}">No</td>
+                                    <td th:text="${d.bulanNama}">Oktober</td>
+                                    <td th:text="${d.hadir}">21</td>
+                                    <td th:text="${d.dinasLuar}">0</td>
+                                    <td th:text="${d.tidakAbsen}">0</td>
+                                    <td><span
+                                            th:text="${ tJam+ ':' + tMenit}"
+                                            th:with="tJamKerja=${d.jamKerja == null ? 0 : d.jamKerja}, tJam=${currentService.getExactHourNumber(tJamKerja)}, tSisa=${tJamKerja % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}">00:00</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr class="text-bold">
+                                    <td colspan="2">TOTAL</td>
+                                    <td><span th:text="${#aggregates.sum(data.![hadir])}">21</span></td>
+                                    <td><span th:text="${#aggregates.sum(data.![dinasLuar])}">0</span></td>
+                                    <td><span th:text="${#aggregates.sum(data.![tidakAbsen])}">1</span></td>
+                                    <td><span
+                                            th:text="${ tJam+ ':' + tMenit}"
+                                            th:with="tJamKerja=${#aggregates.sum(data.![jamKerja] == null ? 0 : data.![jamKerja])}, tJam=${currentService.getExactHourNumber(tJamKerja)}, tSisa=${tJamKerja % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}">00:00</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="mt-3">
+                                <div class="float-left">
+                                    <p class="text-bold">Catatan:</p>
+                                    <ol type="a">
+                                        <li>Tidak absen datang/pulang dianggap tidak masuk kerja, dan tidak dihitung
+                                            akumulasi jam kerja
+                                        </li>
+                                        <li>Dosen Dinas Luar (DL) dihitung 3 jam kerja per hari</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+
+            <th:block th:if="${jenisReport == 'Type2'}">
+                <div class="card card-default">
+                    <div class="card-header text-bold">
+                        <div class="float-right">
+                            <a href="#" th:href="@{/home}"><em class="px-2 fa fa-home fa-lg text-success"></em></a>
+                            <a href="#" th:href="@{/admin-unit/laporan/rekap-dosen}"><em class="px-2 fa fa-redo fa-lg"></em></a>
+                        </div>
+                        Rekap Dosen
+                        <th:block
+                                th:text="${idKategoriPegawai == 1 ? ' - Kategori PNS' : (idKategoriPegawai == 2 ? ' - Kategori NON-PNS' : '')}"></th:block>
+                    </div>
+                    <div class="card-body">
+                        <div class="clearfix">
+                            <form method="post" th:action="@{/admin-unit/laporan/rekap-dosen-print-all}">
+                                <input name="mulai"
+                                       th:value="${mulai !=null ? mulai : #dates.format(#dates.create(#dates.year(#dates.createNow()), #dates.month(#dates.createNow()), 1),'yyyy-MM-dd')}"
+                                       type="hidden"/>
+                                <input name="selesai"
+                                       th:value="${selesai !=null ? selesai : #dates.format(#dates.createNow(),'yyyy-MM-dd')}"
+                                       type="hidden"/>
+                                <input name="idKategoriPegawai" th:value="${idKategoriPegawai}" type="hidden"/>
+                                <button class="btn btn-success float-left" type="submit">Download</button>
+                            </form>
+                        </div>
+                        <br/>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead class="text-center text-bold">
+                                <tr>
+                                    <th rowspan="3">No</th>
+                                    <th rowspan="3">Nama</th>
+                                    <th rowspan="3">Gol</th>
+                                    <th rowspan="3">Jabatan</th>
+                                    <td rowspan="2">Jml Hadir</td>
+                                    <td colspan="4">Perincian Pelaksanaan Harian Kerja</td>
+                                </tr>
+                                <tr>
+                                    <td>DL</td>
+                                    <td>Tidak Absen Datang / Pulang</td>
+                                    <td>Total Jam Kerja</td>
+                                    <td>Keterangan</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="d : ${data}">
+                                    <td th:text="${dStat.index+1}">No</td>
+                                    <td th:utext="${d.nama +'<br /> NIP. ' + (d.nip == null ? '' : d.nip)}">Nama</td>
+                                    <td th:text="${d.golongan}"></td>
+                                    <td th:text="${d.jabatan}"></td>
+                                    <td th:text="${d.hadir}">21</td>
+                                    <td th:text="${d.dinasLuar}">0</td>
+                                    <td th:text="${d.tidakAbsen}">0</td>
+                                    <td><span
+                                            th:text="${ tJam+ ':' + tMenit}"
+                                            th:with="tJamKerja=${d.jamKerja == null ? 0 : d.jamKerja}, tJam=${currentService.getExactHourNumber(tJamKerja)}, tSisa=${tJamKerja % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}">00:00</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr class="text-bold">
+                                    <td colspan="4">TOTAL</td>
+                                    <td><span th:text="${#aggregates.sum(data.![hadir])}">21</span></td>
+                                    <td><span th:text="${#aggregates.sum(data.![dinasLuar])}">0</span></td>
+                                    <td><span th:text="${#aggregates.sum(data.![tidakAbsen])}">1</span></td>
+                                    <td><span
+                                            th:text="${ tJam+ ':' + tMenit}"
+                                            th:with="tJamKerja=${#aggregates.sum(data.![jamKerja] == null ? 0 : data.![jamKerja])}, tJam=${currentService.getExactHourNumber(tJamKerja)}, tSisa=${tJamKerja % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}">00:00</span>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="mt-3">
+                                <div class="float-left">
+                                    <p class="text-bold">Catatan:</p>
+                                    <ol type="a">
+                                        <li>Tidak absen datang/pulang dianggap tidak masuk kerja, dan tidak dihitung
+                                            akumulasi jam kerja
+                                        </li>
+                                        <li>Dosen Dinas Luar (DL) dihitung 3 jam kerja per hari</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
+
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.js}"></script>
+    <script th:src="@{/assets/vendor/select2/dist/js/select2.full.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        $(document).ready(function () {
+            $('.tanggal').datepicker({
+                format: 'yyyy-mm-dd',
+                todayHighlight: true
+            });
+
+            $('#id-kategori-pegawai').select2({
+                placeholder: " Pilih Kategori Pegawai",
+                allowClear: true,
+                width: 'resolve'
+            });
+
+            $('#id-pegawai-cari').select2({
+                placeholder: " Cari Dosen",
+                allowClear: true,
+                width: 'resolve'
+            });
+
+            $('#api-pegawai-cari').select2({
+                dropdownParent: $("#parent-pegawai-search"),
+                placeholder: "Cari pegawai",
+                minimumInputLength: 3,
+                width: 'resolve',
+                ajax: {
+                    url: "/api/employees/admin-unit/" + [[${listIdUnitKerja}]],
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        var query = {
+                            nama: params.term
+                        }
+
+                        return query;
+                    },
+                    processResults: function (data) {
+                        var dataPegawai = [];
+                        data.forEach(function (value, key) {
+                            dataPegawai.push({
+                                id: value.id,
+                                text: (value.gelarDepan == null ? "" : value.gelarDepan + " ") + value.nama + (value.gelarBelakang == null ? "" : " " + value.gelarBelakang)
+                            })
+                        });
+                        return {
+                            results: dataPegawai
+                        }
+                    },
+                    cache: true
+                }
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Rekap Absensi Pegawai Csv</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a href="#" th:href="@{/home}"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a href="#" th:href="@{/rshaji/laporan/rekap-absensi-csv}"><em
+                                class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    Rekap Absensi Pegawai Csv
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/rshaji/laporan/rekap-absensi-csv}">
+                        <div class="form-row ">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="id-tahun">Tahun</label>
+                                        <select class="form-control input-sm custom-select" id="id-tahun" name="tahun"
+                                                required>
+                                            <option value="0">--Pilih Tahun--</option>
+                                            <option th:each="d : ${listTahun}"
+                                                    th:text="${d.toString()}" th:value="${d.toString()}">Pilihan
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="id-bulan">Bulan</label>
+                                    <select class="form-control input-sm custom-select" id="id-bulan" name="bulan"
+                                            required>
+                                        <option value="0">--Pilih Bulan--</option>
+                                        <option th:each="d, it : ${listBulan}"
+                                                th:text="${d.toString()}" th:value="${it.index+1}">Pilihan
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="id-tipe">Tipe Pegawai</label>
+                                    <select class="form-control input-sm custom-select" id="id-tipe" name="tipe"
+                                            required>
+                                        <option></option>
+                                        <option value="2">Semua Pegawai</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="ml-auto">
+                                <button class="btn btn-lg btn-danger" type="submit">
+                                    <i class="fa fa-file-csv"></i> Download Rekap Absensi Csv
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

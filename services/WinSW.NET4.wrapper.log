@@ -1,0 +1,4 @@
+2024-11-04 18:12:29,437 DEBUG - Starting WinSW in service mode
+2024-11-04 18:12:29,469 INFO  - Starting C:\Users\SERVER\scoop\apps\zulu8-jdk\8.82.0.21\bin\java -jar aplikasi-presensi-1.0.21-RELEASE.jar
+2024-11-04 18:12:29,478 INFO  - Started process 9984
+2024-11-04 18:12:29,498 DEBUG - Forwarding logs of the process System.Diagnostics.Process (java) to WinSW.SizeBasedRollingLogAppender

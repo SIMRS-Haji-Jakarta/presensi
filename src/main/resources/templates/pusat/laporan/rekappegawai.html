@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Laporan Rekap Absensi Pegawai</title>
+    <div layout:fragment="assets">
+        <link rel="stylesheet" th:href="@{/assets/vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker.css}">
+        <link rel="stylesheet" th:href="@{/assets/vendor/select2/dist/css/select2.css}">
+        <style>
+            /* Height fix for select2 */
+            .select2-container .select2-selection--single, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 34px;
+            }
+
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                line-height: 34px;
+            }
+        </style>
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a href="#" th:href="@{/home}"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a href="#" th:href="@{/pusat/laporan/rekappegawai}"><em class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    Laporan Rekap Absensi Pegawai
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/pusat/laporan/rekappegawai-print-all}">
+                        <div class="form-row ">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="id-mulai">Periode Mulai</label>
+                                        <div class="input-group date">
+                                            <input class="form-control tanggal" id="id-mulai" name="mulai"
+                                                   th:value="${mulai !=null ? mulai : #dates.format(#dates.create(#dates.year(#dates.createNow()), #dates.month(#dates.createNow()), 1),'yyyy-MM-dd')}"
+                                                   type="text">
+                                            <span class="input-group-append input-group-addon">
+                                        <span class="input-group-text far fa-clock"></span>
+                                    </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="id-selesai">Periode Selesai</label>
+                                        <div class="input-group date">
+                                            <input class="form-control tanggal" id="id-selesai" name="selesai"
+                                                   th:value="${selesai !=null ? selesai : #dates.format(#dates.createNow(),'yyyy-MM-dd')}"
+                                                   type="text">
+                                            <span class="input-group-append input-group-addon">
+                                        <span class="input-group-text far fa-clock"></span>
+                                    </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="id-unit">Unit</label>
+                                    <select class="form-control input-sm custom-select" id="id-unit" name="unit"
+                                            onchange="checkUnit()">
+                                        <option value="0">--Pilih Unit--</option>
+                                        <option th:each="d : ${listUnit}"
+                                                th:text="${d.nama}" th:value="${d.id}">Pilihan
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <div class="form-group" id="parent-pegawai-search">
+                                        <label class="col-form-label" for="api-pegawai-cari">Pegawai</label>
+                                        <div>
+                                            <select class="form-control input-sm custom-select" id="api-pegawai-cari"
+                                                    name="pegawaiCari"
+                                                    th:value="${pegawaiCari}" style="width: 100%;">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="id-kategori">Kategori</label>
+                                    <select class="form-control input-sm custom-select" id="id-kategori"
+                                            name="kategori">
+                                        <option value="0">--Pilih Kategori--</option>
+                                        <option th:each="d : ${listJenis}"
+                                                th:text="${d.nama}" th:value="${d.id}">Pilihan
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-check mt-4 pt-3">
+                                    <input class="form-check-input" id="is-pegawai-shift" name="isPegawaiShift"
+                                           th:checked="${isPegawaiShift}"
+                                           type="checkbox">
+                                    <label class="form-check-label" for="is-pegawai-shift">
+                                        Pegawai Shift
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="ml-auto">
+                                <button class="btn btn-lg btn-danger" type="submit">
+                                    <i class="fa fa-download"></i> Download Absensi
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.js}"></script>
+    <script th:src="@{/assets/vendor/select2/dist/js/select2.full.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        var urlChange = '/api/employees/';
+
+        function checkUnit() {
+            var selectedValue = document.getElementById('id-unit').value;
+            if (selectedValue !== '') {
+                urlChange = '/api/employees/admin-pusat/unit/' + selectedValue;
+            }
+            var select_box = document.getElementById("api-pegawai-cari");
+            select_box.innerText = null;
+        }
+
+        function getURL() {
+            return urlChange;
+        }
+
+        $(document).ready(function () {
+            $('.tanggal').datepicker({
+                format: 'yyyy-mm-dd',
+                todayHighlight: true
+            });
+
+            $('#api-pegawai-cari').select2({
+                dropdownParent: $("#parent-pegawai-search"),
+                placeholder: "Cari pegawai",
+                minimumInputLength: 3,
+                width: 'resolve',
+                ajax: {
+                    url: function () {
+                        return getURL()
+                    },
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        var query = {
+                            nama: params.term
+                        }
+
+                        return query;
+                    },
+                    processResults: function (data) {
+                        var dataPegawai = [];
+                        data.forEach(function (value, key) {
+                            dataPegawai.push({
+                                id: value.id,
+                                text: (value.gelarDepan == null ? "" : value.gelarDepan + " ") + value.nama + (value.gelarBelakang == null ? "" : " " + value.gelarBelakang)
+                            })
+                        });
+                        return {
+                            results: dataPegawai
+                        }
+                    },
+                    cache: true
+                }
+            }).css('height', '34px');
+        });
+    </script>
+</div>
+</body>
+</html>

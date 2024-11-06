@@ -1,0 +1,15 @@
+[Unit]
+Description=Presensi Online UIN Syarif Hidayatullah Jakarta
+After=syslog.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/opt/aplikasi-presensi/target/
+EnvironmentFile=/opt/.g/.h/aplikasi-presensi.env
+ExecStart=/usr/bin/java -jar *.jar
+SuccessExitStatus=143
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sinkronisasi Presensi</title>
+    <link rel="stylesheet" th:href="@{/assets/vendor/select2/dist/css/select2.css}">
+    <style>
+        /* Height fix for select2 */
+        .select2-container .select2-selection--single, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 34px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 34px;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="content-wrapper">
+            <div class="card">
+                <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                    <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                    <span th:text="${message}">Change a few things up and try submitting again.</span>
+                </div>
+                <div class="alert alert-success alert-dismissable" th:if="${!#strings.isEmpty(messageOk)}">
+                    <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                    <span th:text="${messageOk}">Change a few things up and try submitting again.</span>
+                </div>
+
+                <div class="ie-fix-flex" role="tabpanel">
+                    <ul class="nav nav-tabs nav-justified">
+                        <li class="nav-item" role="presentation">
+                            <a aria-controls="pegawai-ke-mesin" class="nav-link active" data-toggle="tab"
+                               href="#pegawai-ke-mesin" role="tab">
+                                Pegawai ke Mesin
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a aria-controls="face-ke-mesin" class="nav-link" data-toggle="tab" href="#face-ke-mesin"
+                               role="tab">
+                                Face ke Mesin
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a aria-controls="biodata-ke-presensi" class="nav-link" data-toggle="tab"
+                               href="#biodata-ke-presensi" role="tab">
+                                Biodata ke Presensi
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="pegawai-ke-mesin" role="tabpanel">
+                            <form class="form-horizontal" method="get"
+                                  th:action="@{/pusat/sinkronisasi/proses-pegawai-mesin}">
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Mesin Presensi</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control select-mesin"
+                                                name="mesinPresensi" style="width: 100%;">
+                                            <option th:each="p : ${listMesinPresensi}"
+                                                    th:selected="${p == mesinPresensi}"
+                                                    th:text="${p.nama}"
+                                                    th:value="${p.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-xl-10 offset-md-2">
+                                        <button class="btn btn-danger" type="submit"><i class="fa fa-upload"></i> Proses
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane" id="face-ke-mesin" role="tabpanel">
+                            <form class="form-horizontal" method="get"
+                                  th:action="@{/pusat/sinkronisasi/proses-face-mesin}">
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Mesin Presensi</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control select-mesin"
+                                                id="id-mesin-presensi" name="mesinPresensi"
+                                                onchange="checkMesinPresensi()" style="width: 100%;">
+                                            <option th:each="p : ${listMesinPresensi}"
+                                                    th:selected="${p == mesinPresensi}"
+                                                    th:text="${p.nama}"
+                                                    th:value="${p.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Face Pegawai</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control"
+                                                id="api-pegawai-cari" multiple name="facePegawais"
+                                                style="width: 100%;">
+                                            <option>-- Proses Semua --</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-xl-10 offset-md-2">
+                                        <button class="btn btn-danger" type="submit"><i class="fa fa-upload"></i> Proses
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane" id="biodata-ke-presensi" role="tabpanel">
+                            <form class="form-horizontal" method="get"
+                                  th:action="@{/pusat/sinkronisasi/proses-biodata-presensi}">
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label">Mesin Presensi</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control select-mesin"
+                                                name="mesinPresensi" style="width: 100%;">
+                                            <option th:each="p : ${listMesinPresensi}"
+                                                    th:selected="${p == mesinPresensi}"
+                                                    th:text="${p.nama}"
+                                                    th:value="${p.id}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-xl-10 offset-md-2">
+                                        <button class="btn btn-success" type="submit"><i class="fa fa-download"></i>
+                                            Proses
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/select2/dist/js/select2.full.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        var urlChange = '/api/employees/mesin-presensi/';
+
+        function checkMesinPresensi() {
+            var selectedValue = document.getElementById('id-mesin-presensi').value;
+            if (selectedValue !== '') {
+                urlChange = '/api/employees/mesin-presensi/' + selectedValue;
+            }
+            var select_box = document.getElementById("api-pegawai-cari");
+            select_box.innerText = null;
+        }
+
+        function getURL() {
+            return urlChange;
+        }
+
+        $(document).ready(function () {
+            $('.select-mesin').select2({
+                placeholder: "Pilih mesin presensi",
+                width: 'resolve',
+            }).css('height', '34px');
+
+            $('#api-pegawai-cari').select2({
+                //dropdownParent: $("#parent-pegawai-search"),
+                placeholder: "Kosongkan untuk memproses semua pegawai. Klik untuk memilih satu atau beberapa pegawai",
+                //minimumInputLength: 3,
+                width: 'resolve',
+                ajax: {
+                    url: function () {
+                        return getURL()
+                    },
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        var query = {
+                            nama: params.term
+                        }
+
+                        return query;
+                    },
+                    processResults: function (data) {
+                        var dataPegawai = [];
+                        data.forEach(function (value, key) {
+                            dataPegawai.push({
+                                id: value.id,
+                                text: (value.gelarDepan == null ? "" : value.gelarDepan + " ") + value.nama + (value.gelarBelakang == null ? "" : " " + value.gelarBelakang)
+                            })
+                        });
+                        return {
+                            results: dataPegawai
+                        }
+                    },
+                    cache: true
+                }
+            }).css('height', '34px');
+        });
+    </script>
+</div>
+</body>
+</html>

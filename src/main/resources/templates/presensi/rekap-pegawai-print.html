@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">>
+<head>
+    <meta charset="UTF-8">
+    <title>Rekap Pegawai</title>
+    <div layout:fragment="assets">
+        <style media="print" type="text/css">
+            @page {
+                size: auto;
+            }
+        </style>
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-body">
+                    <div>
+                        <div class="text-center">
+                            <h4 class="text-md mt-3">LAPORAN REKAP PRESENSI ONLINE</h4>
+                            <p class="text-bold">Periode: <span th:text="${#temporals.format(mulai, 'dd MMMM yyyy')}">Tanggal Mulai</span>
+                                s.d <span th:text="${#temporals.format(selesai, 'dd MMMM yyyy')}"></span></p>
+                        </div>
+                        <div class="row mt-5">
+                            <div class="col-6">
+                                <div class="clearfix">
+                                    <p class="float-left">ID Absen</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${pegawai.nomorAbsen}">1257</span>
+                                    </p>
+                                </div>
+
+                                <div class="clearfix">
+                                    <p class="float-left">Nama</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${nama}">Supardi, M.Kom</span></p>
+                                </div>
+
+                                <div class="clearfix">
+                                    <p class="float-left">NIP</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${pegawai.nip==null ? '-' : pegawai.nip}">1234</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="clearfix">
+                                    <p class="float-left">Pangkat/Gol.</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${(pegawai.golongan?.pangkat==null ? '' : pegawai.golongan?.pangkat + '/' + (pegawai.golongan?.nama==null ? '' : pegawai.golongan?.nama))}">Golongan IIIa</span>
+                                    </p>
+                                </div>
+
+                                <div class="clearfix">
+                                    <p class="float-left">Jabatan</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${pegawai.jabatanPegawai?.nama}">Supardi, M.Kom</span>
+                                    </p>
+                                </div>
+
+                                <div class="clearfix">
+                                    <p class="float-left">Unit Kerja</p>
+                                    <p class="float-right mr-2 text-bold"><span
+                                            th:text="${pegawai?.unitKerjaPresensi?.nama}">1576</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive table-bordered">
+                        <table class="table table-sm text-center">
+                            <thead class="text-center text-bold">
+                            <tr>
+                                <td rowspan="3">No</td>
+                                <td rowspan="3">Bulan</td>
+                                <td rowspan="3">Jml Hari Kerja</td>
+                                <td colspan="11">Perincian Pelaksanaan Harian Kerja</td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">Jml Hadir</td>
+                                <td colspan="3">Keterangan Tidak Hadir</td>
+                                <td rowspan="2">Tidak Absen Datang / Pulang</td>
+                                <td rowspan="2">Alpa / Tanpa Keterangan</td>
+                                <td colspan="2">Kekurangan Jam Kerja</td>
+                                <td colspan="2">Total Kekurangan Jam Kerja</td>
+                                <td rowspan="2">Aktual Hari Kerja</td>
+                            </tr>
+                            <tr>
+                                <td>Cuti</td>
+                                <td>Sakit</td>
+                                <td>DL</td>
+                                <td>Terlambat</td>
+                                <td>Pulang Lebih Awal</td>
+                                <td>Jam</td>
+                                <td>Hari</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="d : ${data}">
+                                <td th:text="${dStat.index+1}">No</td>
+                                <td th:text="${d.bulanNama}">Oktober</td>
+                                <td th:text="${d.hariKerja}">22</td>
+                                <td th:text="${d.hadir}">21</td>
+                                <td th:text="${d.cuti}">1</td>
+                                <td th:text="${d.sakit}">0</td>
+                                <td th:text="${d.dinasLuar}">0</td>
+                                <td th:text="${d.tidakAbsen}">0</td>
+                                <td th:text="${d.alpa}">0</td>
+                                <td><span
+                                        th:text="${ tJam+ ':' + tMenit + ':' + tDetik}"
+                                        th:with="tTerlambat=${d.timeTerlambat == null ? 0 : d.timeTerlambat}, tJam=${currentService.getExactHourNumber(tTerlambat)}, tSisa=${tTerlambat % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}, tDetik=${tTerlambat % 60} ">00:00</span>
+                                </td>
+                                <td><span
+                                        th:text="${ tJam+ ':' + tMenit + ':' + tDetik}"
+                                        th:with="tKecepetan=${d.timeKecepetan == null ? 0 : d.timeKecepetan}, tJam=${currentService.getExactHourNumber(tKecepetan)}, tSisa=${tKecepetan % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}, tDetik=${tKecepetan % 60} ">00:00</span>
+                                </td>
+                                <td><span
+                                        th:text="${ tJam+ ':' + tMenit + ':' + tDetik}"
+                                        th:with="tJamKurang=${d.timeJamKurang == null ? 0 : d.timeJamKurang}, tJam=${currentService.getExactHourNumber(tJamKurang)}, tSisa=${tJamKurang % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}, tDetik=${tJamKurang % 60} ">00:00</span>
+                                </td>
+                                <td th:text="${d.hariKurang}">1</td>
+                                <td th:text="${d.aktualKerja}">20</td>
+                            </tr>
+                            <tr class="text-bold">
+                                <td colspan="2">TOTAL</td>
+                                <td><span th:text="${#aggregates.sum(data.![hariKerja])}">22</span></td>
+                                <td><span th:text="${#aggregates.sum(data.![hadir])}">21</span></td>
+                                <td><span th:text="${#aggregates.sum(data.![cuti])}">1</span></td>
+                                <td><span th:text="${#aggregates.sum(data.![sakit])}">0</span></td>
+                                <td><span th:text="${#aggregates.sum(data.![dinasLuar])}">0</span></td>
+                                <td><span th:text="${#aggregates.sum(data.![tidakAbsen])}">1</span></td>
+                                <td><span th:text="${#aggregates.sum(data.![alpa])}">0</span></td>
+                                <td><span
+                                        th:text="${ tJam+ ':' + tMenit + ':' + tDetik}"
+                                        th:with="tTerlambat=${#aggregates.sum(data.![timeTerlambat] == null ? 0 : data.![timeTerlambat])}, tJam=${currentService.getExactHourNumber(tTerlambat)}, tSisa=${tTerlambat % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}, tDetik=${tTerlambat % 60} ">00:00</span></td>
+                                <td><span
+                                        th:text="${ tJam+ ':' + tMenit + ':' + tDetik}"
+                                        th:with="tKecepetan=${#aggregates.sum(data.![timeKecepetan] == null ? 0 : data.![timeKecepetan])}, tJam=${currentService.getExactHourNumber(tKecepetan)}, tSisa=${tKecepetan % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}, tDetik=${tKecepetan % 60} ">00:00</span></td>
+                                <td><span
+                                        th:text="${ tJam+ ':' + tMenit + ':' + tDetik}"
+                                        th:with="tJamKurang=${#aggregates.sum(data.![timeJamKurang] == null ? 0 : data.![timeJamKurang])}, tJam=${currentService.getExactHourNumber(tJamKurang)}, tSisa=${tJamKurang % 3600}, tMenit=${currentService.getExactMinuteNumber(tSisa)}, tDetik=${tJamKurang % 60} ">00:00</span></td>
+                                <td><span th:text="${#aggregates.sum(data.![hariKurang])}">1</span></td>
+                                <td><span th:text="${#aggregates.sum(data.![aktualKerja])}">10</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="float-left">
+                            <p class="text-bold">Akumulasi Perhitungan Total Kekurangan Jam Kerja dalam 1
+                                Periode:</p>
+                            <ol type="a">
+                                <li>7,5 - 8 jam dianggap 1 hari tidak masuk</li>
+                                <li>8,1 - 16 jam dianggap 2 hari tidak masuk</li>
+                                <li>16,1 - 24 jam dianggap 3 hari tidak masuk</li>
+                                <li>Untuk selanjutnya kelipatan 8 jam bertambah 1 hari tidak masuk</li>
+                                <li>Tidak absen datang/pulang dianggap tidak masuk kerja</li>
+                            </ol>
+                        </div>
+                        <div class="float-right">
+                            <div class="clearfix">
+                                Jakarta, <span th:text="${#dates.format(#dates.createNow(), 'dd MMMM yyyy')}"></span>
+                            </div>
+                            <div class="clearfix">
+                                <span th:text="${unit?.pjJabatan}"></span>
+                            </div>
+                            <div class="mt-5">
+                                <div class="clearfix">
+                                    <span th:text="${pejabat == null ? '' : pejabat}"></span>
+                                </div>
+                                <div class="clearfix">
+                                    <span th:text="${'Nip. ' + (unit?.pjPegawai == null ? '' : unit?.pjPegawai.nip)}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

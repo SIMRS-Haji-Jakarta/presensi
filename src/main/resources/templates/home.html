@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${messageSuccess}">
+        Perubahan berhasil tersimpan.
+        <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <!-- toast -->
+    <div aria-atomic="true" aria-live="polite" style="position: absolute; z-index:1; min-height: 200px; width: 100%"
+         th:if="${!fotoProfile.status}">
+        <div aria-atomic="true" aria-live="assertive" class="toast mx-auto" data-delay="5000" role="alert"
+             style="width: fit-content">
+            <div class="toast-body" style="background-color: #7a7a7a; color: #eeeeee">
+                <i class="fa fa-exclamation-triangle"></i> &emsp;Foto Anda belum divalidasi
+                <button aria-label="Close" class="ml-2 mb-1 close" data-dismiss="toast" type="button">
+                    <span aria-hidden="true" style="color: #eeeeee">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card card-default">
+                <div class="card-body text-center">
+                    <div class="py-4">
+                        <img alt="Profile"
+                             class="img-fluid rounded-circle img-thumbnail thumb96"
+                             th:src="@{${url}}">
+                    </div>
+                    <h4 class="m-0 text-bold"><span th:text="${nama}">Supardi, M.Kom</span></h4>
+                    <dl class="row">
+                        <dt class="col-sm-3">NIP</dt>
+                        <dd class="col-sm-9"><span
+                                th:text="${#strings.isEmpty(pegawai?.nip) ? '-' : pegawai?.nip}"></span></dd>
+                        <dt class="col-sm-3">No Absen</dt>
+                        <dd class="col-sm-9"><span th:text="${pegawai?.nomorAbsen}"></span></dd>
+                        <dt class="col-sm-3">Unit Kerja</dt>
+                        <dd class="col-sm-9"><span th:text="${pegawai?.unitKerjaPresensi?.unit?.nama}"></span> - <span
+                                th:text="${pegawai?.unitKerjaPresensi?.nama}"></span></dd>
+                        <dt class="col-sm-3">Jabatan</dt>
+                        <dd class="col-sm-9"><span th:text="${pegawai?.jabatanPegawai?.nama}"></span></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card card-default">
+                <div class="card-header d-flex align-items-center">
+                    <div class="d-flex justify-content-center col">
+                        <div class="h4 m-0 text-center">Presensi Online</div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card b">
+                                <div class="card-body text-center">
+                                    <a class="link-unstyled text-success" href="#" th:href="@{/presensi/datang}">
+                                        <em class="fa-5x fas fa-calendar-plus mb-3"></em><br>
+                                        <span class="h4">Presensi Datang</span><br>
+                                        <div class="text-sm text-muted">Lihat Detail &rarr;</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card b">
+                                <div class="card-body text-center">
+                                    <a class="link-unstyled text-danger" href="#" th:href="@{/presensi/pulang}">
+                                        <em class="fa-5x fa fa-calendar-minus mb-3"></em><br>
+                                        <span class="h4">Presensi Pulang</span><br>
+                                        <div class="text-sm text-muted">Lihat Detail &rarr;</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card b">
+                                <div class="card-body text-center">
+                                    <a class="link-unstyled text-info" href="#" th:href="@{/presensi/kehadiran}">
+                                        <em class="fa-5x fa fa-calendar-check mb-3"></em><br>
+                                        <span class="h4">Kehadiran</span><br>
+                                        <div class="text-sm text-muted">Lihat Detail &rarr;</div>
+                                    </a></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card b">
+                                <div class="card-body text-center">
+                                    <a class="link-unstyled text-success" href="#" th:href="@{/presensi/pengajuan}">
+                                        <em class="fa-5x fas fa-clipboard-check mb-3"></em><br>
+                                        <span class="h4">Pengajuan Ketidakhadiran</span><br>
+                                        <div class="text-sm text-muted">Lihat Detail &rarr;</div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4" th:if="${!fotoProfile.status}">
+                            <div class="card b">
+                                <div class="card-body text-center" data-placement="top"
+                                     th:attrprepend="data-toggle = ${#strings.isEmpty(fotoProfile.urlBukti)} ? 'tooltip'"
+                                     th:id="${#strings.isEmpty(fotoProfile.urlBukti)} ? 'tool-tip'"
+                                     title="Harap upload foto Anda">
+                                    <a class="link-unstyled text-danger" href="#"
+                                       th:href="${!fotoProfile.status ? 'javascript:uploadFotoIdCard()' : '#'}">
+                                        <em class="fa-5x fa fa-id-card-alt mb-3"></em><br>
+                                        <span class="h4">Upload Foto</span><br>
+                                        <div class="text-sm text-muted">Uploaf Foto ID Card &rarr;</div>
+                                    </a></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card b">
+                                <div class="card-body text-center">
+                                    <a class="link-unstyled text-info" href="#" th:href="@{/presensi/rekap}">
+                                        <em class="fa-5x fa fa-chalkboard-teacher mb-3"></em><br>
+                                        <span class="h4">Rekap</span><br>
+                                        <div class="text-sm text-muted">Lihat Kategori &rarr;</div>
+                                    </a></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card b">
+                                <div class="card-body text-center">
+                                    <a class="link-unstyled text-success" href="#"
+                                       th:href="@{/presensi/change-password}">
+                                        <em class="fa-5x fa fa-key mb-3"></em><br>
+                                        <span class="h4">Ubah Sandi</span><br>
+                                        <div class="text-sm text-muted">Lihat Detail &rarr;</div>
+                                    </a></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card b">
+                                <div class="card-body text-center">
+                                    <a class="link-unstyled text-danger" href="#" th:href="@{/logoff}">
+                                        <em class="fa-5x fa fa-door-open mb-3"></em><br>
+                                        <span class="h4">Keluar</span><br>
+                                        <div class="text-sm text-muted">Keluar Aplikasi &rarr;</div>
+                                    </a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div layout:fragment="scripts">
+    <script th:inline="javascript" type="text/javascript">
+        $(window).on('load', function () {
+            showToolTip();
+            openModalOnHash();
+
+            if ([[${triggerUploadFoto}]]) {
+                hideToolTip();
+                $('#modal-upload-foto').modal('show');
+            }
+
+            if ([[${triggerUpdateNoAbsen}]]) {
+                $('#modal-update-no-absen').modal('show');
+            }
+
+            if ([[${!fotoProfile.status}]]) {
+                openToast();
+            }
+
+            var forms = document.getElementsByClassName('needs-validation');
+            for (let form of forms) {
+                form.addEventListener('submit', (evt) => {
+                    if (!form.checkValidity()) {
+                        evt.preventDefault();
+                        evt.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                });
+
+            }
+        });
+
+        function openToast() {
+            $(".toast").toast('show');
+        }
+
+        function openModalOnHash() {
+            if (window.location.hash) {
+                var hash = window.location.hash.substring(1);
+                $('#' + hash).modal('show');
+                hideToolTip();
+            }
+        }
+
+
+        function showToolTip() {
+            $('#tool-tip').tooltip({trigger: 'manual'}).tooltip('show');
+        }
+
+        function hideToolTip() {
+            $('#tool-tip').tooltip({trigger: 'manual'}).tooltip('hide');
+        }
+
+        function uploadFotoIdCard() {
+            hideToolTip();
+            $('#modal-upload-foto').modal('show');
+        }
+
+        function loadFile() {
+            var output = document.getElementById('output');
+
+            var fileImage = event.target.files[0];
+            output.src = URL.createObjectURL(fileImage);
+            output.onload = function () {
+                URL.revokeObjectURL(output.src) // free memory
+            };
+        }
+    </script>
+
+    <div aria-hidden="true" aria-labelledby="modal-upload-foto-in"
+         class="modal fade" data-backdrop="static" data-keyboard="false" id="modal-upload-foto"
+         role="dialog" th:if="${!fotoProfile.status}">
+
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="edit-modal-in">Pembaruan Foto Pegawai Untuk Kartu Pegawai</h4>
+                </div>
+                <form class="needs-validation form-horizontal" enctype="multipart/form-data" id="val-foto-profile"
+                      method="post" th:action="@{/home/foto/form}">
+                    <div class="modal-body">
+                        <div class="alert alert-primary" role="alert">
+                            Dalam rangka pembuatan <i>id card</i> seluruh pegawai UIN Syarif Hidayatullah Jakarta,
+                            dengan ini
+                            agar setiap pegawai
+                            mengupload foto terbaru dengan ketentuan sebagai berikut:
+                            <ul>
+                                <li>Pas foto: Untuk pria menggunakan <strong>kemeja putih berdasi</strong> dan wanita
+                                    menggunakan <strong>kemeja putih berkerudung hitam</strong></li>
+                                <li>Latar belakang foto <i>(background)</i> berwarna <strong>merah</strong></li>
+                                <li>Foto tidak menggunakan <strong>masker</strong></li>
+                                <li>Foto yang di upload merupakan foto <strong>terbaru</strong></li>
+                                <li>Foto minimal berukuran <strong>100 KB</strong> dan maksimal berukuran <strong>800
+                                    KB</strong></li>
+                                <li>File foto harus berekstensi <strong>JPEG/JPG</strong></li>
+                            </ul>
+                        </div>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                             th:if="${messageErrSave}">
+                            Terjadi kesalahan saat menyimpan. Periksa kembali foto Anda dan silahkan coba lagi!
+                            <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="form-group row mb-2">
+                            <label class="col-md-2 col-form-label mb-2 font-weight-bold" for="id-nama">Nama</label>
+                            <div class="col-xl-10 col-12">
+                                <input class="form-control" disabled id="id-nama" name="nama" th:value="${nama}"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row mb-2" th:if="${!#strings.isEmpty(pegawai?.nip)}">
+                            <label class="col-md-2 col-form-label mb-2 font-weight-bold" for="id-nip">NIP</label>
+                            <div class="col-xl-10 col-12">
+                                <input class="form-control" disabled id="id-nip" name="nip" th:value="${pegawai?.nip}"
+                                       type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row mb-2">
+                            <label class="col-md-2 col-form-label mb-2 font-weight-bold" for="id-nik">Nomor
+                                KTP/NIK</label>
+                            <div class="col-xl-10 col-12">
+                                <input class="form-control" disabled id="id-nik" name="nik" th:value="${pegawai?.nik}"
+                                       type="text">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-md-2 col-form-label mb-2"></label>
+                            <div class="col-xl-4 col-6">
+                                <img class="img-fluid rounded float-left" height="300" id="output"
+                                     th:classappend="${messageErrImage} ? 'is-invalid'"
+                                     th:src="@{${#strings.isEmpty(fotoProfile.urlBukti) ? '/assets/img/default.png' : fotoProfile.urlBukti}}"
+                                     width="263"/>
+                                <div class="invalid-feedback" th:style="${messageErrImage} ? 'display:flex;' : ''">
+                                    Foto tidak boleh kosong atau File kurang dari 100 KB atau melebihi 800 KB dan
+                                    pastikan file berekstensi JPG/JPEG.
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-6"
+                                 style="color: #30517b; background-color: #f0f0f5; max-width: 46%;">
+                                <div class="col-xl-12 col-12 mt-2 justify-content-center text-center">
+                                    <div style="width: 100%;">
+                                        <p class="badge badge-info align-items-center">Contoh Valid Pria</p>
+                                    </div>
+                                </div>
+                                <div class="col-xl-12 col-12 mb-2 d-flex justify-content-center text-center">
+                                    <div style="width: 45%;">
+                                        <img class="img-fluid rounded mx-auto d-block"
+                                             th:src="@{/assets/img/valid-pria.jpg}"/>
+                                    </div>
+                                </div>
+                                <div class="col-xl-12 col-12 mt-2 justify-content-center text-center">
+                                    <div style="width: 100%;">
+                                        <p class="badge badge-info align-items-center">Contoh Valid Wanita</p>
+                                    </div>
+                                </div>
+                                <div class="col-xl-12 col-12 mb-2 d-flex justify-content-center text-center">
+                                    <div style="width: 45%;">
+                                        <img class="img-fluid rounded mx-auto d-block"
+                                             th:src="@{/assets/img/valid-wanita.jpg}"/></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-2">
+                            <label class="col-md-2 col-form-label mb-2"></label>
+                            <div class="col-xl-10 col-12">
+                                <input accept="image/jpeg" class="rounded" id="id-input-image"
+                                       name="image" onchange="loadFile()" type="file">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary"
+                                th:attrappend="onclick = ${triggerUploadFoto} ? 'location.href=\'/logoff\''"
+                                th:attrprepend="data-dismiss = ${!triggerUploadFoto} ? 'modal'"
+                                th:text="${triggerUploadFoto ? 'Log Out' : 'Close'}"
+                                type="button">Close
+                        </button>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <div aria-hidden="true" aria-labelledby="modal-update-no-absen-in"
+         class="modal fade" data-backdrop="static" data-keyboard="false" id="modal-update-no-absen"
+         role="dialog"
+         th:if="${triggerUpdateNoAbsen}">
+
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="edit-modal-no-absen-in">Pembaruan Nomor Absen Pegawai</h4>
+                </div>
+                <form class="needs-validation form-horizontal">
+                    <div class="modal-body">
+                        <div class="alert alert-primary" role="alert">
+                            Dalam rangka perapihan data Pegawai, setiap pegawai diharapkan mengupdate Nomor Absen dengan
+                            ketentuan sebagai berikut:
+                            <ol>
+                                <li>Nomor Absen tidak boleh kosong</li>
+                                <li>Nomor Absen harus berupa angka</li>
+                                <li>Nomor Absen tidak boleh duplikat dengan yang lain</li>
+                            </ol>
+                        </div>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert"
+                             th:if="${!#strings.isEmpty(message)}">
+                            <span th:text="${message}"></span>
+                            <button aria-label="Close" class="close" data-dismiss="alert" type="button">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="form-group row mb-2">
+                            <label class="col-md-2 col-form-label mb-2 font-weight-bold" for="id-nama">Nomor
+                                Absen Saat ini</label>
+                            <div class="col-xl-10 col-12">
+                                <input class="form-control" disabled id="id-no-absen-current" name="nomor-absen-current"
+                                       th:value="${pegawai?.nomorAbsen}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal"
+                                type="button">Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

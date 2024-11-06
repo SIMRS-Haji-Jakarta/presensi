@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">>
+<head>
+    <meta charset="UTF-8">
+    <title>Pengajuan Ketidakhadiran</title>
+    <div layout:fragment="assets">
+        <link rel="stylesheet" th:href="@{/assets/vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker.css}">
+    </div>
+
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div th:if="${!#strings.isEmpty(message)}" class="alert alert-danger alert-dismissable">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+        </div>
+    </div>
+    <div class="card card-default">
+        <div class="card-header text-bold">
+            <div class="float-right">
+                <a th:href="@{/home}" href="#"><em class="px-2 fa fa-home fa-lg text-success"></em></a>
+                <a th:href="@{/presensi/pengajuan}" href="#"><em class="px-2 fa fa-redo fa-lg"></em></a>
+            </div>
+            Pengajuan Ketidakhadiran
+        </div>
+        <div class="card-body">
+            <form class="form-horizontal" method="post" enctype="multipart/form-data" th:action="@{/presensi/pengajuan}"
+                  th:object="${pengajuan}" action="/">
+                <input type="hidden" th:field="*{id}"/>
+                <input type="hidden" th:field="*{pegawai}"/>
+                <input id="is-url" type="hidden" th:field="*{isUrl}">
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Deskripsi</label>
+                    <div class="col-sm-10">
+                        <textarea type="text" class="form-control" cols="5" placeholder="Deskripsi Ketidakhadiran"
+                                  th:field="*{deskripsi}">
+                        </textarea>
+                        <div class="text-danger" th:if="${#fields.hasErrors('deskripsi')}" th:errors="*{deskripsi}">Help
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label mb-2">Periode Mulai</label>
+                    <div class="col-sm-10">
+                        <div class="input-group date">
+                            <input class="form-control" type="text" th:field="*{tanggalMulai}">
+                            <span class="input-group-append input-group-addon">
+                                <span class="input-group-text far fa-clock"></span>
+                            </span>
+                        </div>
+                        <div class="text-danger" th:if="${#fields.hasErrors('tanggalMulai')}"
+                             th:errors="*{tanggalMulai}">
+                            Help
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-2 col-form-label mb-2">Periode Selesai</label>
+                    <div class="col-sm-10">
+                        <div class="input-group date">
+                            <input class="form-control" type="text" th:field="*{tanggalSelesai}">
+                            <span class="input-group-append input-group-addon">
+                                <span class="input-group-text far fa-clock"></span>
+                            </span>
+                        </div>
+                        <div class="text-danger" th:if="${#fields.hasErrors('tanggalSelesai')}"
+                             th:errors="*{tanggalSelesai}">
+                            Help
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">Status Presensi</label>
+                    <div class="col-sm-10">
+                        <select name="statusPresensi" class="form-control" th:field="*{statusPresensi}">
+                            <option th:each="x : ${listStatusPresensi}"
+                                    th:value="${x.id}" th:text="${x.nama}"
+                                    th:selected="(${x} == *{statusPresensi})">option
+                            </option>
+                        </select>
+                        <div class="text-danger" th:if="${#fields.hasErrors('statusPresensi')}"
+                             th:errors="*{statusPresensi}">
+                            Help
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label">URL Bukti</label>
+                    <div class="col-sm-10">
+                        <div class="form-check">
+                            <div class="form-group row ml-0 align-items-center">
+                                <input class="form-check-input" type="radio" name="option"
+                                       id="flexRadioDefault1"
+                                       value="opsi1">
+                                <label class="col-sm-3 form-check-label" for="flexRadioDefault1">
+                                    Unggah File (Maks. 600 KB)
+                                </label>
+                                <div id="opsi-unggah" class="col-sm-9">
+                                    <input class="form-control filestyle" name="berkas" id="id-berkas" type="file"
+                                           data-classbutton="btn btn-secondary"
+                                           data-classinput="form-control inline"
+                                           data-icon="&lt;span class='fa fa-upload mr-2'&gt;&lt;/span&gt;">
+                                    <div class="text-danger" th:if="${#fields.hasErrors('urlBukti')}"
+                                         th:errors="*{urlBukti}">Help
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-check">
+                            <div class="form-group row ml-0 align-items-center"><input class="form-check-input"
+                                                                                       type="radio" name="option"
+                                                                                       id="flexRadioDefault2"
+                                                                                       value="opsi2">
+                                <label class="col-sm-2 form-check-label" for="flexRadioDefault2" id="labelEksternal">
+                                    URL Share
+                                </label>
+                                <div id="opsi-url" class="col-sm-10">
+                                    <input class="form-control filestyle" name="urlShare" id="id-urlshare"
+                                           type="text"
+                                           data-classbutton="btn btn-secondary"
+                                           data-classinput="form-control inline"
+                                           data-icon="&lt;span class='fa fa-upload mr-2'&gt;&lt;/span&gt;"
+                                           pattern=".{5,250}"
+                                           th:classappend="${messageErrUrlShare} ? 'is-invalid'" placeholder="https://www.uinjkt.ac.id/wp-content/uploads/2017/10/logo_pin_uinjkt.png">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="error-msg" class="form-check">
+                            <div class="form-group row">
+                                <div class="text-danger col-lg-10 col-sm-2 ml-lg-8 pl-lg-5 ml-4 pl-1" th:if = "${messageErrUrlShare}">
+                                    Field ini tidak boleh kosong dan maksimal terdiri dari 250 karakter
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row text-right">
+                    <div class="col-sm-12 col-sm-offset-2">
+                        <button class="btn btn-success" type="submit">Simpan</button>
+                        <button class="btn btn-secondary" type="reset">Reset</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="card card-default">
+        <div class="card-header text-bold">
+            Daftar Pengajuan Ketidakhadiran Tahun <span th:text="${#dates.year(#dates.createNow())}">2020</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal Mulai</th>
+                        <th>Tanggal Selesai</th>
+                        <th>Jenis</th>
+                        <th>Status</th>
+                        <th>File</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d : ${data.content}">
+                        <td th:text="${dStat.index+1}">No</td>
+                        <td th:text="${d.tanggalMulai}">Tanggal Mulai</td>
+                        <td th:text="${d.tanggalSelesai}">Tanggal Selesai</td>
+                        <td th:text="${d.statusPresensi?.nama}">Jenis</td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${d.statusVerifikasi?.id=='7997-4'} ? 'badge-danger' : ( ${d.statusVerifikasi?.id=='7997-5'} ? 'badge-success' : '' )"
+                                  th:text="${d.statusVerifikasi?.nama}">Status
+                            </span>
+                        </td>
+                        <td th:if="${!d.isUrl}">
+                            <a class="btn btn-white" th:href="@{/file-pengajuan/{id}(id=${d.urlBukti})}"
+                               title="Download Berkas">
+                                <i class="fa fa-download"></i>
+                            </a>
+                        </td>
+                        <td th:if="${d.isUrl}">
+                            <a class="btn btn-white" th:href="${d.urlShare}"
+                               title="Lihat URL Share">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                        </td>
+                        <td th:text="${d.catatan==null ? '-' : d.catatan}">No</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex">
+                <div sd:pagination-summary="">Showing 1 to 10 of 57 entries</div>
+                <div class="ml-auto">
+                    <ul class="pagination" sd:pagination-split="7" sd:pagination="full">
+                        <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
+                        <li class="disabled">
+                            <a href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="#">1
+                                <span class="sr-only">(current)</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.js}"></script>
+    <script th:src="@{/assets/vendor/bootstrap-filestyle/src/bootstrap-filestyle.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        $(document).ready(function () {
+            $('.input-group.date').datepicker({
+                format: 'yyyy-mm-dd',
+                todayHighlight: true
+            });
+
+            document.querySelectorAll(".form-check-input").forEach(input => input.addEventListener('click', getActive));
+            if ([[${messageErrUrlShare}]] === true)
+                document.getElementById('flexRadioDefault2').checked = true;
+            else
+                document.getElementById('flexRadioDefault1').checked = true;
+            getActive();
+        });
+
+        function showInputField(idElementDiv, idElement) {
+            var element = document.getElementById(idElementDiv);
+            element.style.display = "flex";
+            var inputField = document.getElementById(idElement);
+            inputField.setAttribute("required", "");
+        }
+
+        function hideInputField(idElementDiv, idElement) {
+            var element = document.getElementById(idElementDiv);
+            element.style.display = "none";
+            var inputField = document.getElementById(idElement);
+            inputField.removeAttribute("required");
+            inputField.value = "";
+        }
+
+
+        function getActive() {
+            var checkRadio = document.querySelector('.form-check-input:checked');
+            if (checkRadio.value === 'opsi1') {
+                showInputField('opsi-unggah', checkRadio.id);
+                hideInputField('opsi-url', 'id-urlshare');
+                hideInputField('error-msg', 'id-urlshare');
+                document.getElementById('is-url').value = false;
+            } else if (checkRadio.value === 'opsi2') {
+                showInputField('opsi-url', checkRadio.id);
+                hideInputField('opsi-unggah', 'id-berkas');
+                document.getElementById('is-url').value = true;
+            }
+            // console.log(document.querySelector('.form-check-input:checked').value);
+        }
+
+    </script>
+</div>
+</body>
+</html>

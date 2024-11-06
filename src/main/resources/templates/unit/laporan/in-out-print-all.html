@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">>
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=yes" name="viewport">
+    <title>Laporan In/Out</title>
+
+    <div layout:fragment="assets">
+        <style media="print" type="text/css">
+            @page {
+                size: auto;
+            }
+        </style>
+    </div>
+</head>
+<body>
+<div layout:fragment="content-print">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-body">
+                    <div>
+                        <div class="text-center">
+                            <h4 class="text-md mt-3">LAPORAN IN/OUT DETAIL PRESENSI ONLINE</h4>
+                            <p class="text-bold">Periode: <span
+                                    th:text="${#temporals.format(mulai, 'dd MMMM yyyy')}">Tanggal Mulai</span>
+                                s.d <span th:text="${#temporals.format(selesai, 'dd MMMM yyyy')}"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="table-bordered">
+                        <table class="table table-sm text-center">
+                            <thead>
+                            <tr>
+                                <th rowspan="2">No</th>
+                                <th rowspan="2">NIP</th>
+                                <th rowspan="2">Nama</th>
+                                <th rowspan="2">IN/OUT</th>
+                                <th:block th:each="b : ${listBulan}">
+                                    <th class="text-bold text-center" th:colspan="${b.value}"><span
+                                            th:text="${b.key}"></span></th>
+                                </th:block>
+                            </tr>
+                            <tr>
+                                <th:block th:each="h : ${hariKerja}">
+                                    <td class="text-bold text-center"
+                                        th:text="${#temporals.format(h.tanggal, 'd')}"></td>
+                                </th:block>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <th:block th:each="d, dStat : ${data}">
+                                <tr>
+                                    <td rowspan="2" th:text="${dStat.index + 1}"></td>
+                                    <td rowspan="2" th:text="${d.nip}"></td>
+                                    <td rowspan="2" th:text="${d?.nama}"></td>
+                                    <td>IN:</td>
+                                    <th:block th:each="s : ${dataInOut}">
+                                        <th:block th:if="${s.pegawai?.id == d.id}">
+                                            <th:block th:if="${s.jamKerjaShift != null}">
+                                                <td th:text="${s.datang != null ? #temporals.format(s.datang, 'HH:mm') : (s.jamKerjaShift=='L' ? 'L' : (s.status==null? 'A' : (s.status == 'Dinas Luar' ? 'DL' : (s.status == 'Cuti' ? 'C' : (s.status == 'Sakit' ? 'S' : (s.status == 'Tugas Belazar' ? 'TB' : #temporals.format(s.datang, 'HH:mm')))))))}"></td>
+                                            </th:block>
+                                            <th:block th:unless="${s.jamKerjaShift != null}">
+                                                <td th:text="${s.datang != null ? #temporals.format(s.datang, 'HH:mm') : (s.hari=='Libur' ? 'L' : (s.status==null? 'A' : (s.status == 'Dinas Luar' ? 'DL' : (s.status == 'Cuti' ? 'C' : (s.status == 'Sakit' ? 'S' : (s.status == 'Tugas Belazar' ? 'TB' : #temporals.format(s.datang, 'HH:mm')))))))}"></td>
+                                            </th:block>
+                                        </th:block>
+                                    </th:block>
+                                </tr>
+                                <tr>
+                                    <td>OUT:</td>
+                                    <th:block th:each="s : ${dataInOut}">
+                                        <th:block th:if="${s.pegawai?.id == d.id}">
+                                            <th:block th:if="${s.jamKerjaShift != null}">
+                                                <td th:text="${s.pulang != null ? #temporals.format(s.pulang, 'HH:mm') : (s.jamKerjaShift=='L' ? 'L' : (s.status==null? 'A' : (s.status == 'Dinas Luar' ? 'DL' : (s.status == 'Cuti' ? 'C' : (s.status == 'Sakit' ? 'S' : (s.status == 'Tugas Belazar' ? 'TB' : #temporals.format(s.pulang, 'HH:mm')))))))}"></td>
+                                            </th:block>
+                                            <th:block th:unless="${s.jamKerjaShift != null}">
+                                                <td th:text="${s.pulang != null ? #temporals.format(s.pulang, 'HH:mm') : (s.hari=='Libur' ? 'L' : (s.status==null? 'A' : (s.status == 'Dinas Luar' ? 'DL' : (s.status == 'Cuti' ? 'C' : (s.status == 'Sakit' ? 'S' : (s.status == 'Tugas Belazar' ? 'TB' : #temporals.format(s.pulang, 'HH:mm')))))))}"></td>
+                                            </th:block>
+                                        </th:block>
+                                    </th:block>
+                                </tr>
+                            </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="float-right mt-3">
+                        <div class="clearfix">
+                            Jakarta, <span th:text="${#dates.format(#dates.createNow(), 'dd MMMM yyyy')}"></span>
+                        </div>
+                        <div class="clearfix">
+                            <span th:text="${pejabat == null ? '' : pejabat.jabatanPegawai.nama}"></span>
+                        </div>
+                        <div class="mt-5">
+                            <div class="clearfix">
+                                <span th:text="${pejabat == null ? '' : pejabat.nama}"></span>
+                            </div>
+                            <div class="clearfix">
+                                <span th:text="${pejabat == null ? '' : 'NIP. ' + pejabat.nip}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Hari Kerja</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div th:if="${!#strings.isEmpty(message)}" class="alert alert-danger alert-dismissable">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <form method="get" class="form-group mb-4">
+                <div class="form-row ">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label class="col-form-label" for="id-tahun">Tahun</label>
+                                <select id="id-tahun" class="form-control input-sm custom-select" name="tahun">
+                                    <option value="0">--Pilih Tahun--</option>
+                                    <option th:each="c : ${listTahun}"
+                                            th:selected="(${c} == ${tahun})"
+                                            th:value="${c.toString()}" th:text="${c.toString()}">Pilihan
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="col-form-label" for="id-bulan">Bulan</label>
+                            <select id="id-bulan" class="form-control input-sm custom-select" name="bulan">
+                                <option value="0">--Pilih Bulan--</option>
+                                <option th:each="c, it : ${listBulan}"
+                                        th:selected="(${it.index+1} == ${bulan})"
+                                        th:value="${it.index+1}"
+                                        th:text="${c.toString()}">Pilihan
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <a th:href="@{/pusat/hari-kerja/generate}" class="btn btn-danger">
+                        <i class="fa fa-calendar"></i> Generate
+                    </a>
+                    <div class="ml-auto">
+                        <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a th:href="@{/home}" href="#"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a th:href="@{/pusat/hari-kerja/}" href="#"><em class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    List Hari Kerja
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Hari</th>
+                                <th>Status</th>
+                                <th>Datang</th>
+                                <th>Pulang</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="d : ${data.content}">
+                                <td th:text="${d.tanggal}">Tanggal</td>
+                                <td th:text="${#temporals.dayOfWeekName(d.tanggal)}">Hari</td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${d.statusHari?.id=='7998-2'} ? 'badge-danger' : 'badge-success'"
+                                          th:text="${d.statusHari?.nama}">Status
+                                    </span>
+                                </td>
+                                <td th:text="${d.jamKerja?.datang}">Datang</td>
+                                <td th:text="${d.jamKerja?.pulang}">Pulang</td>
+                                <td class="text-right">
+                                    <a sec:authorize="hasAnyAuthority('am','pegpst')"
+                                       th:href="@{/pusat/hari-kerja/form(tanggal=${d.tanggal})}"
+                                       class="btn btn-white btn-sm" title="Edit">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </a>
+                                    <a sec:authorize="hasAnyAuthority('am','pegpst')"
+                                       th:href="@{/pusat/hari-kerja/delete(id=${d.tanggal})}"
+                                       class="btn btn-danger btn-sm" title="Delete">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex">
+                        <div sd:pagination-summary="">Showing 1 to 10 of 57 entries</div>
+                        <div class="ml-auto">
+                            <ul class="pagination" sd:pagination-split="7" sd:pagination="full">
+                                <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
+                                <li class="disabled">
+                                    <a href="#" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <a href="#">1
+                                        <span class="sr-only">(current)</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

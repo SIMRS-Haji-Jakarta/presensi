@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Laporan Foto Profile Valid</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a href="#" th:href="@{/home}"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a href="#" th:href="@{/laporan}"><em class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    Laporan Foto Valid
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/pusat/foto-profile/rekapfotoprofile-print-all}">
+                        <div class="form-row ">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="id-kategori">Kategori Pegawai</label>
+                                    <select class="form-control input-sm custom-select" id="id-kategori"
+                                            name="idKategoriPegawai">
+                                        <option value="">Semua</option>
+                                        <option th:each="p : ${listKategoriPegawai}"
+                                                th:selected="${idKategoriPegawai == p?.id}"
+                                                th:text="${p.nama}"
+                                                th:value="${p.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="id-unit">Unit</label>
+                                    <select class="form-control input-sm custom-select" id="id-unit" name="unit">
+                                        <option value="">--Pilih Unit--</option>
+                                        <option th:each="d : ${listUnit}"
+                                                th:text="${d.nama}" th:value="${d.id}">Pilihan
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <div class="ml-auto">
+                                <button class="btn btn-lg btn-danger" type="submit">
+                                    <i class="fa fa-download"></i> Download Daftar Foto Valid
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/select2/dist/js/select2.full.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        $(document).ready(function () {
+            $('#id-kategori-pegawai').select2({
+                placeholder: " Pilih Kategori Pegawai",
+                allowClear: true,
+                width: 'resolve'
+            });
+        });
+    </script>
+</div>
+</body>

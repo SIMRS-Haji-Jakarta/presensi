@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">>
+<head>
+    <meta charset="UTF-8">
+    <title>Rekap Foto Valid</title>
+    <div layout:fragment="assets">
+        <style media="print" type="text/css">
+            @page {
+                size: auto;
+            }
+        </style>
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-body">
+                    <div>
+                        <div class="text-center">
+                            <h4 class="text-md mt-3">LAPORAN REKAP FOTO VALID</h4>
+                            <h5 class="text-bold">UIN SYARIF HIDAYATULLAH JAKARTA</h5>
+                            <p class="text-bold">Unit: <span th:text="${namaUnit}"></span></p>
+                            <p class="text-bold">Per Tanggal: <span
+                                    th:text="${#temporals.format(tglSekarang, 'dd MMMM yyyy')}">Tanggal</span></p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive table-bordered">
+                        <table class="table table-sm text-center">
+                            <thead class="text-center text-bold">
+                            <tr>
+                                <th rowspan="2">No</th>
+                                <th rowspan="2"></th>
+                                <th rowspan="2">Nama</th>
+                                <th rowspan="2">NIK</th>
+                                <th rowspan="2">NIP</th>
+                                <td rowspan="2">Jenis Kelamin</td>
+                                <td rowspan="2">Kategori Pegawai</td>
+                                <td rowspan="2">Unit Kerja</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="d : ${data}">
+                                <td th:text="${dStat.index+1}">No</td>
+                                <td><img alt="Foto"
+                                         class="img-fluid img-thumbnail" style="height: 30em; width: 20em;"
+                                         th:src="${d.urlBerkas}"/></td>
+                                <td style="text-align: start" th:text="${d.nama}">Nama</td>
+                                <td th:text="${d.nik == null ? '' : d.nik}">NIK</td>
+                                <td th:text="${d.nip == null ? '' : d.nip}">NIP</td>
+                                <td th:text="${d.jenisKelamin}"></td>
+                                <td th:text="${d.kategoriPegawai}"></td>
+                                <td th:text="${d.unit + ' - ' + d.unitKerjaPresensi}">21</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration debug="false">
+    <!--Define the storage address of the log file Do not use the relative path in the configuration of LogBack -->
+    <property name="LOG_HOME" value="/opt/logs"/>
+    <property name="APP_NAME" value="aplikasi-presensi"/>
+
+    <!-- Color Log -->
+    <!-- Rendering class for color log dependencies -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+    <!-- Color log format -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){magenta} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(---){faint} %clr(%logger){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <!-- Console output settings -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Settings when the colorless log is output in the console -->
+    <!-- <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+             Formatted output: %d for date, %thread for thread name, %-5level: level for 5 characters width from left. %msg: log message, %n is a newline
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender> -->
+
+
+    <!-- INFO log file -->
+    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- The path and file name of the log file being recorded -->
+        <file>${LOG_HOME}/${APP_NAME}-info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- The path of the archived log file, for example, today is the 2013-12-21 log. The currently written log file path is specified by the file node. You can set this file to the file path specified by file to a different path, thus the current log. File or archive log files are in different directories.
+            The log file for 2013-12-21 is specified by fileNamePattern. %d{yyyy-MM-dd} specifies the date format, %i specifies the index -->
+            <fileNamePattern>${LOG_HOME}/${APP_NAME}-info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- In addition to logging, the log file can be configured to exceed 2M. If it exceeds 2M, the log file will start with index 0.
+            Name the log file, for example log-error-2013-12-21.0.log -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>20MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!-- Append mode log -->
+        <append>true</append>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--Formatted output: %d for date, %thread for thread name, %-5level: level for 5 characters width from left. %msg: log message, %n is a newline -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <!-- This log file only records the info level above -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <!-- ERROR log file -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- The path and file name of the log file being recorded -->
+        <file>${LOG_HOME}/${APP_NAME}-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- The path of the archived log file, for example, today is the 2013-12-21 log. The currently written log file path is specified by the file node. You can set this file to the file path specified by file to a different path, thus the current log. File or archive log files are in different directories.
+            The log file for 2013-12-21 is specified by fileNamePattern. %d{yyyy-MM-dd} specifies the date format, %i specifies the index -->
+            <fileNamePattern>${LOG_HOME}/${APP_NAME}-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- In addition to logging, the log file can be configured to exceed 2M. If it exceeds 2M, the log file will start with index 0.
+            Name the log file, for example log-error-2013-12-21.0.log -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>20MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!-- Append mode log -->
+        <append>true</append>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--Formatted output: %d for date, %thread for thread name, %-5level: level for 5 characters width from left. %msg: log message, %n is a newline -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+        <!-- This log file only records warn and error levels -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+
+    <!-- Log output level -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="INFO_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </root>
+
+    <logger name="bing" level="DEBUG"/>
+</configuration>

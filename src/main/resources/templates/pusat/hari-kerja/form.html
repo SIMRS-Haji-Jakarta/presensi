@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Hari Kerja</title>
+
+    <div layout:fragment="assets">
+        <link rel="stylesheet" th:href="@{/assets/vendor/bootstrap-clockpicker/dist/css/bootstrap-clockpicker.min.css}">
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div th:if="${!#strings.isEmpty(message)}" class="alert alert-danger alert-dismissable">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a th:href="@{/home}" href="#"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a th:href="@{/pusat/hari-kerja/form(tanggal=${hariKerja.tanggal})}" href="#"><em
+                                class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    Form Hari Kerja, Tanggal: <span th:text="${hariKerja.tanggal}">Tanggal</span>
+                </div>
+                <div class="card-body">
+                    <form class="form-horizontal" method="post" th:action="@{/pusat/hari-kerja/form}"
+                          th:object="${hariKerja}" action="/">
+                        <input type="hidden" th:field="*{tanggal}"/>
+
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Status Hari</label>
+                            <div class="col-sm-10">
+                                <select name="statusHari" class="form-control" th:field="*{statusHari}">
+                                    <option th:each="x : ${listStatusHari}"
+                                            th:value="${x.id}" th:text="${x.nama}"
+                                            th:selected="(${x} == *{statusHari})">option
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Jam Kerja</label>
+                            <div class="col-sm-10">
+                                <select name="jamKerja" class="form-control" th:field="*{jamKerja}">
+                                    <option th:each="x : ${listJamKerja}"
+                                            th:selected="(${x} == *{jamKerja})"
+                                            th:value="${x.id}" th:text="${x.nama}">option
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row text-right">
+                            <div class="col-sm-12 col-sm-offset-2">
+                                <button class="btn btn-success" type="submit">Simpan</button>
+                                <button class="btn btn-secondary" type="reset">Reset</button>
+                                <button class="btn btn-warning" onclick="window.history.back()">Kembali</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/bootstrap-clockpicker/dist/js/bootstrap-clockpicker.min.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        $(document).ready(function () {
+            $('.clockpicker').clockpicker({
+                donetext: "Ok"
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

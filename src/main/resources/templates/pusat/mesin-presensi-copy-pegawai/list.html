@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Copy Pegawai</title>
+    <link rel="stylesheet" th:href="@{/assets/vendor/select2/dist/css/select2.css}">
+    <style>
+        /* Height fix for select2 */
+        .select2-container .select2-selection--single, .select2-container--default .select2-selection--single .select2-selection__rendered, .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 34px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 34px;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="content-wrapper">
+            <div class="card">
+                <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(messageErr)}">
+                    <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                    <span th:text="${messageErr}">Change a few things up and try submitting again.</span>
+                </div>
+                <div class="alert alert-success alert-dismissable" th:if="${!#strings.isEmpty(messageOk)}">
+                    <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                    <span th:text="${messageOk}">Change a few things up and try submitting again.</span>
+                </div>
+                <div class="card card-default">
+                    <div class="card-header text-bold">
+                        <div class="float-right">
+                            <a href="#" th:href="@{/home}"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                            <a href="#" th:href="@{/pusat/mesin-presensi-copy-pegawai/}"><em
+                                    class="px-2 fa fa-redo fa-sm"></em></a>
+                        </div>
+                        Copy Pegawai Mesin Presensi
+                    </div>
+                    <div class="card-body">
+                        <form class="form-horizontal" method="get"
+                              th:action="@{/pusat/mesin-presensi-copy-pegawai/proses}">
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Mesin Presensi Sumber</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control select-mesin-sumber"
+                                            name="mesinPresensiSumber" required style="width: 100%;">
+                                        <option></option>
+                                        <option th:each="p : ${listMesinPresensi}"
+                                                th:selected="${p == mesinPresensi}"
+                                                th:text="${p.nama}"
+                                                th:value="${p.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Mesin Presensi Tujuan</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control select-mesin-tujuan"
+                                            name="mesinPresensiTujuan" required style="width: 100%;">
+                                        <option></option>
+                                        <option th:each="p : ${listMesinPresensi}"
+                                                th:selected="${p == mesinPresensi}"
+                                                th:text="${p.nama}"
+                                                th:value="${p.id}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Tipe Pegawai</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control select-tipe-pegawai"
+                                            name="tipePegawai" required style="width: 100%;">
+                                        <option></option>
+                                        <option value="1">Dosen</option>
+                                        <option value="2">Tenaga Kependidikan</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-xl-10 offset-md-2">
+                                    <button class="btn btn-danger" type="submit"><i class="fa fa-upload"></i> Proses
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/select2/dist/js/select2.full.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        $(document).ready(function () {
+            $('.select-mesin-sumber').select2({
+                placeholder: "Pilih mesin presensi sumber",
+                width: 'resolve',
+            }).css('height', '34px');
+
+            $('.select-mesin-tujuan').select2({
+                placeholder: "Pilih mesin presensi tujuan",
+                width: 'resolve',
+            }).css('height', '34px');
+
+            $('.select-tipe-pegawai').select2({
+                placeholder: "Pilih tipe pegawai",
+                width: 'resolve',
+            }).css('height', '34px');
+        });
+    </script>
+</div>
+</body>
+</html>

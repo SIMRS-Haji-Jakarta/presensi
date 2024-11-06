@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">>
+<head>
+    <meta charset="UTF-8">
+    <title>Rekap Kehadiran</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div th:if="${!#strings.isEmpty(message)}" class="alert alert-danger alert-dismissable">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header text-bold">
+            <div class="float-right">
+                <a th:href="@{/home}" href="#"><em class="px-2 fa fa-home fa-lg text-success"></em></a>
+                <a th:href="@{/presensi/rekap}" href="#"><em class="px-2 fa fa-redo fa-lg"></em></a>
+            </div>
+            Rekap Kehadiran
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card b">
+                        <div class="card-body text-center">
+                            <a class="link-unstyled text-info" th:href="@{/presensi/in-out}" href="#">
+                                <em class="fa-5x fas fa-chart-bar mb-3"></em><br>
+                                <span class="h4">In/Out Detail</span><br>
+                                <div class="text-sm text-muted">Lihat Detail &rarr;</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card b">
+                        <div class="card-body text-center">
+                            <a class="link-unstyled text-info" th:href="@{/presensi/rekap-pegawai}" href="#">
+                                <em class="fa-5x fa fa-chart-area mb-3"></em><br>
+                                <span class="h4">Rekap Pegawai</span><br>
+                                <div class="text-sm text-muted">Lihat Detail &rarr;</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

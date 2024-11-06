@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en"
+      layout:decorate="~{fragments/layout}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Pegawai Shift</title>
+
+    <div layout:fragment="assets">
+        <link rel="stylesheet" th:href="@{/assets/vendor/select2/dist/css/select2.css}">
+    </div>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="alert alert-danger alert-dismissable" th:if="${!#strings.isEmpty(message)}">
+                <button aria-hidden="true" class="close" data-dismiss="alert" type="button">×</button>
+                <span th:text="${message}">Change a few things up and try submitting again.</span>
+            </div>
+
+            <form class="form-group mb-4" method="get">
+                <div class="form-row ">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label class="col-form-label" for="id-nama">Nama Pegawai</label>
+                            <input class="form-control input-sm" id="id-nama" name="nama" th:value="${nama}">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <button class="btn btn-success" data-target="#tambah-modal" data-toggle="modal" type="button">
+                        <i class="fa fa-plus"></i> Tambah
+                    </button>
+                    <div class="ml-auto">
+                        <button class="btn btn-info" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="card card-default">
+                <div class="card-header text-bold">
+                    <div class="float-right">
+                        <a href="#" th:href="@{/home}"><em class="px-2 fa fa-home fa-sm text-success"></em></a>
+                        <a href="#" th:href="@{/rshaji/pegawai-shift/}"><em class="px-2 fa fa-redo fa-sm"></em></a>
+                    </div>
+                    Data Pegawai Shift
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>No Absen</th>
+                                <th>NIP</th>
+                                <th>Nama</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="d : ${data.content}">
+                                <td th:text="${d.pegawai?.nomorAbsen}">No Absen</td>
+                                <td th:text="${d.pegawai?.nip == null? '-' : d.pegawai?.nip}">NIP</td>
+                                <th:block th:if="${d.pegawai != null}">
+                                    <td th:text="${d.pegawai?.gelarDepan == null ? '' : d.pegawai?.gelarDepan + ' '} + ${d.pegawai?.nama} + ${d.pegawai?.gelarBelakang == null ? '' : ' ' + d.pegawai?.gelarBelakang}">
+                                        Pegawai Shift
+                                    </td>
+                                </th:block>
+                                <td class="text-right">
+                                    <a onclick="return confirm('Are you sure?');"
+                                       th:href="@{/rshaji/pegawai-shift/delete(id=${d.id})}">
+                                        <button class="btn btn-white" sec:authorize="hasAnyAuthority('am','rshaji')"
+                                                title="Hapus Data"
+                                                type="button">
+                                            <i class="fa fa-trash"> </i>
+                                        </button>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex">
+                        <div sd:pagination-summary="">Showing 1 to 10 of 57 entries</div>
+                        <div class="ml-auto">
+                            <ul class="pagination" sd:pagination="full" sd:pagination-split="7">
+                                <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
+                                <li class="disabled">
+                                    <a aria-label="Previous" href="#">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <a href="#">1
+                                        <span class="sr-only">(current)</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div layout:fragment="scripts">
+    <script th:src="@{/assets/vendor/select2/dist/js/select2.full.js}"></script>
+    <script th:inline="javascript" type="text/javascript">
+        var idUnitKerja = [[${idUnitKerja}]];
+        var urlChange = "/api/employees/unit-kerja-presensi/" + parseInt(idUnitKerja);
+
+        function getURL() {
+            return urlChange;
+        }
+
+        function showModalEdit(id) {
+            $.ajax({
+                url: "edit/" + id,
+                success: function (data) {
+                    $("#holder-edit-modal").html(data);
+                    $("#edit-modal").modal("show");
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('#api-pegawai').select2({
+                dropdownParent: $("#tambah-modal"),
+                placeholder: "Pilih pegawai untuk dipetakan menjadi Pegawai Shift",
+                //minimumInputLength: 3,
+                width: 'resolve',
+                ajax: {
+                    url: function () {
+                        return getURL()
+                    },
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        let query = {
+                            nama: params.term
+                        }
+
+                        return query;
+                    },
+                    processResults: function (data) {
+                        let dataPegawai = [];
+                        data.forEach(function (value, key) {
+                            dataPegawai.push({
+                                id: value.id,
+                                text: (value.gelarDepan == null ? "" : value.gelarDepan + " ") + value.nama + (value.gelarBelakang == null ? "" : " " + value.gelarBelakang)
+                            })
+                        });
+                        return {
+                            results: dataPegawai
+                        }
+                    },
+                    cache: true
+                }
+            });
+        });
+
+    </script>
+
+    <div aria-hidden="true" aria-labelledby="tambah-modal-in" class="modal fade" id="tambah-modal" role="dialog"
+         tabindex="-1">
+
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="tambah-modal-in">Tambah Pegawai Shift</h4>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="/" class="form-horizontal" method="post"
+                      th:action="@{/rshaji/pegawai-shift/form}"
+                      th:object="${pegawaiShift}">
+                    <input th:field="*{id}" type="hidden"/>
+
+                    <div class="modal-body">
+
+                        <div class="form-group row mb-2">
+                            <label class="col-sm-2 col-form-label">Pegawai</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="api-pegawai" name="pegawai" style="width: 60%"
+                                        th:field="*{pegawai}">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                        <button class="btn btn-primary" type="submit">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="holder-edit-modal"></div>
+</div>
+</body>
+</html>

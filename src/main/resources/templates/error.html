@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="Presensi Online UIN Jakarta">
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/img/favicon.ico}">
+    <title>Error | UIN Syarif Hidayatullah Jakarta</title>
+
+    <link rel="stylesheet" th:href="@{/assets/vendor/@fortawesome/fontawesome-free/css/brands.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendor/@fortawesome/fontawesome-free/css/regular.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendor/@fortawesome/fontawesome-free/css/solid.css}">
+    <link rel="stylesheet" th:href="@{/assets/vendor/@fortawesome/fontawesome-free/css/fontawesome.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/app.css}">
+</head>
+
+<body>
+<div class="wrapper">
+    <div class="abs-center wd-xl">
+        <!-- START card-->
+        <div class="text-center mb-4">
+            <div class="mb-3"><em class="fa fa-wrench fa-5x text-muted"></em></div>
+            <div class="text-lg mb-3"><span th:text="${status}">404</span></div>
+            <p class="lead m-0">Oh! Something went wrong :(</p>
+            <p th:text="${message}">Don't worry, we're now checking this.</p>
+            <p>In the meantime, please try one of those links below or come back in a moment</p>
+        </div>
+        <ul class="list-inline text-center text-sm mb-4">
+            <li class="list-inline-item">
+                <a class="text-muted" th:href="@{/home}" href="home.html">Go Home</a>
+            </li>
+        </ul>
+        <div class="p-3 text-center">
+            <span>&copy; 2020 Pustipanda UIN Jakarta</span>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/assets/vendor/modernizr/modernizr.custom.js}"></script>
+<script th:src="@{/assets/vendor/jquery/dist/jquery.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/dist/js/bootstrap.js}"></script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-162617330-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-162617330-1');
+</script>
+</body>
+</html>
